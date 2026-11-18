@@ -1,0 +1,5 @@
+def capabilities(self) -> la.CapabilityReport:
+    """What the project can run: the runtime, the tools and each entry of
+    langadapter.capabilities.CAPABILITIES, available, missing setup or
+    unsupported, with the reason."""
+    ...

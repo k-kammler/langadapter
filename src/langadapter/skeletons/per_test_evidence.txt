@@ -1,0 +1,3 @@
+def per_test_evidence(self, request):
+    """Each test's own coverage."""
+    ...

@@ -1,0 +1,5 @@
+def salvage_syntax(self, source: str) -> SourceResult:
+    """A bounded repair of a source the parser rejects, through
+    langadapter.templates.repair_syntax with the language's local fix. An
+    applied repair says how many repairs it made (SourceResult.repairs)."""
+    ...

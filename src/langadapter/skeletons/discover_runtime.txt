@@ -1,0 +1,7 @@
+@classmethod
+def discover_runtime(cls, root, values, *, container=False, environment=None,
+                     resolve_path=None) -> RuntimeChoice:
+    """The program that runs the tests, and the tools, for the project at
+    ``root`` from its setting ``values`` (project_settings), before a
+    project context exists."""
+    ...

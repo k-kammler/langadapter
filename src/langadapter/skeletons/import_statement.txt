@@ -1,0 +1,5 @@
+@classmethod
+def import_statement(cls, target: str, root: str) -> str:
+    """The line a test uses to import ``target`` in the project at ``root``,
+    or a sentence (``none; ...``) where the language's tests need none."""
+    ...

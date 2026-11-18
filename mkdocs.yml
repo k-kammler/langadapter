@@ -1,0 +1,88 @@
+site_name: LangAdapter
+site_description: Test execution, coverage, mutation and timing observations for a configured project
+# Published by .github/workflows/docs.yml with GitHub Pages.
+site_url: https://k-kammler.github.io/langadapter/
+repo_url: https://github.com/k-kammler/langadapter
+docs_dir: docs
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - content.code.copy
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.highlight
+  - pymdownx.superfences
+  # The home page includes the README.
+  - pymdownx.snippets:
+      base_path: ["."]
+      check_paths: true
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            show_root_heading: true
+            show_source: false
+            members_order: source
+            filters: ["!^_"]
+            # Every field of a dataclass is listed with its type and
+            # default, also one without a docstring of its own.
+            show_if_no_docstring: true
+            merge_init_into_class: true
+            separate_signature: true
+            show_signature_annotations: true
+            extensions:
+              - griffe_sphinx
+
+nav:
+  - Home: index.md
+  - Getting started: getting-started.md
+  - User guide:
+      - Install the toolchains: guide/toolchains.md
+      - Python projects: guide/python.md
+      - Java projects: guide/java.md
+      - C projects: guide/c.md
+      - Containers: guide/containers.md
+      - Mutation sessions: guide/mutation-sessions.md
+      - Timing: guide/timing.md
+      - Source analysis: guide/source-analysis.md
+      - Settings: guide/settings.md
+  - Extending:
+      - Extension points: extending/index.md
+      - Add a language: extending/add-a-language.md
+      - Who needs what: extending/who-needs-what.md
+      - What Testuary requires: extending/consumer-requirements.md
+      - How the parts fit: extending/architecture.md
+      - A metric provider: extending/metric-provider.md
+      - The conformance check: extending/conformance.md
+  - Reference:
+      - reference/index.md
+      - Tested environments: reference/tested-environments.md
+      - Hooks and facts: reference/hooks.md
+      - Commands: reference/cli.md
+      - Core: reference/core.md
+      - Runs: reference/runs.md
+      - Outcomes and identity: reference/outcomes.md
+      - Setup and capabilities: reference/setup.md
+      - Mutation: reference/mutation.md
+      - Sources: reference/sources.md
+      - Python: reference/python.md
+      - Java: reference/java.md
+      - C: reference/c.md
+      - Extending: reference/extending.md
+      - Machine resources: reference/resources.md
+      - Timing placement: reference/placement.md
+  - Explanation:
+      - Outcomes: explanation/outcomes.md
+      - Prepared copies: explanation/prepared-copies.md
+      - Environment selection: explanation/environment-selection.md
+  - Changelog: changelog.md

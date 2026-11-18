@@ -1,0 +1,5 @@
+def validate_mutation_session_options(self, engine, *, workers, distributor,
+                                      allow_fewer_workers, settings):
+    """Raise InvalidRequest for an option beyond ``workers`` that ``engine``
+    does not accept."""
+    ...

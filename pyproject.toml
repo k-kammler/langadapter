@@ -1,0 +1,161 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "langadapter"
+# Read from src/langadapter/__init__.py (tool.hatch.version).
+dynamic = ["version"]
+description = "Test execution, coverage, mutation and timing observations for a configured project"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+authors = [
+    { name = "Kevin Kammler" },
+]
+keywords = ["testing", "test-execution", "coverage", "mutation-testing", "pytest", "junit"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Quality Assurance",
+    "Topic :: Software Development :: Testing",
+    "Typing :: Typed",
+]
+dependencies = [
+    # The structural source operations parse with tree-sitter in the calling
+    # process. The project's own tools run in the project environment.
+    "tree-sitter>=0.25,<0.26",
+    "tree-sitter-python>=0.25,<0.26",
+    "tree-sitter-java>=0.23.5,<0.24",
+    # The structural metrics' lines of code and complexity are lizard's
+    # (Testuary's range, so both install together).
+    "lizard>=1.17,<2",
+    # The mutation engine writes its Cosmic Ray configuration with tomli-w.
+    "tomli-w>=1.0,<2",
+    # Consumers' requirement profiles are composed through the installed
+    # dependencies, whose requirement strings and markers packaging parses. It
+    # has no upper bound: canonicalize_name, Requirement, InvalidRequirement and
+    # markers, all LangAdapter uses, have held across its yearly major versions.
+    "packaging>=22",
+]
+
+[project.scripts]
+langadapter = "langadapter.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/k-kammler/langadapter"
+Repository = "https://github.com/k-kammler/langadapter"
+Documentation = "https://k-kammler.github.io/langadapter/"
+Issues = "https://github.com/k-kammler/langadapter/issues"
+
+[project.optional-dependencies]
+# The C adapter's Python dependencies. Its test units, load repair and merging
+# parse C with tree-sitter (grammar 0.24 is parser ABI 15, which tree-sitter
+# loads from 0.25 on), gcov's counters are read through gcovr's JSON report
+# (format 0.15), and a project's setup.py is read with setuptools' run_setup.
+# setuptools has no upper bound: a project's setup.py runs under it when C
+# reads its extensions, and a project expects a current setuptools.
+c = [
+    "tree-sitter-c>=0.24.2,<0.25",
+    "gcovr>=8.7,<9",
+    "setuptools>=70",
+]
+dev = [
+    # The C adapter's tests need its dependencies.
+    "langadapter[c]",
+    "build>=1.0",
+    # The tests read coverage data files. The pins are the project tools of
+    # the same Python (python/_profile.py, TOOLS), and Testuary pins them too.
+    "coverage==7.6.8; python_version < '3.14'",
+    "coverage==7.16.2; python_version >= '3.14'",
+    "pytest==8.1.1; python_version < '3.14'",
+    "pytest==8.4.2; python_version >= '3.14'",
+    # The timing-plugin tests run these plugins with the flags that leave them out.
+    "pytest-benchmark>=5,<6",
+    "pytest-cov>=6,<7",
+    "pytest-xdist>=3,<4",
+    # The project purpose's test runs an anyio-marked test with anyio's plugin.
+    "anyio>=4,<5",
+    "ruff>=0.16,<1",
+]
+# The documentation site (mkdocs.yml). Install into an isolated environment.
+docs = [
+    "mkdocs>=1.6,<2",
+    "mkdocs-material>=9.5,<10",
+    "mkdocstrings[python]>=0.26,<1",
+    # mkdocstrings 0.30 does not fit pymdown-extensions 12 (its Highlight needs md).
+    "pymdown-extensions>=10,<12",
+    # Renders the #: comments above attributes as their docstrings.
+    "griffe-sphinx>=0.3.1,<0.4",
+]
+
+[tool.hatch.version]
+path = "src/langadapter/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/langadapter"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+"README.md" = "share/doc/langadapter/README.md"
+"docs/getting-started.md" = "share/doc/langadapter/docs/getting-started.md"
+"docs/changelog.md" = "share/doc/langadapter/docs/changelog.md"
+"docs/guide" = "share/doc/langadapter/docs/guide"
+"docs/extending" = "share/doc/langadapter/docs/extending"
+"docs/explanation" = "share/doc/langadapter/docs/explanation"
+# The installed pages link to these three. The other reference pages are
+# generated API documentation for the site.
+"docs/reference/tested-environments.md" = "share/doc/langadapter/docs/reference/tested-environments.md"
+"docs/reference/hooks.md" = "share/doc/langadapter/docs/reference/hooks.md"
+"docs/reference/cli.md" = "share/doc/langadapter/docs/reference/cli.md"
+"examples/metric_provider.py" = "share/doc/langadapter/examples/metric_provider.py"
+"examples/python_suite.py" = "share/doc/langadapter/examples/python_suite.py"
+"examples/python_mutation.py" = "share/doc/langadapter/examples/python_mutation.py"
+"examples/toy_adapter.py" = "share/doc/langadapter/examples/toy_adapter.py"
+
+[tool.hatch.build.targets.sdist]
+# The source, its public documentation and examples. The tests stay in the
+# repository: they need the development setup that CONTRIBUTING.md describes.
+include = [
+    "src/langadapter/**",
+    "CITATION.cff",
+    "examples/*.py",
+    "docs/index.md",
+    "docs/getting-started.md",
+    "docs/changelog.md",
+    "docs/guide/*.md",
+    "docs/extending/*.md",
+    "docs/explanation/*.md",
+    "docs/reference/*.md",
+    "mkdocs.yml",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "README.md",
+    "pyproject.toml",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "--strict-markers --strict-config"
+filterwarnings = ["error"]
+markers = [
+    "mutation_tool: starts a real mutation tool (Cosmic Ray or PIT); the suite split runs these apart",
+]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F"]

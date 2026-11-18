@@ -1,0 +1,7 @@
+def prepare_suite(self, suite_root: str, *,
+                  isolation_config: bool = False):
+    """Write the setup of the suite directory ``suite_root`` before its tests
+    run, and the configuration that isolates the suite with
+    ``isolation_config``. The result has an ``outcome``
+    (Outcome.COMPLETED when done) and a ``reason``."""
+    ...

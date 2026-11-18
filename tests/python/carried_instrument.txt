@@ -1,0 +1,340 @@
+
+# Deterministic random state for every test. Code that draws random
+# numbers can pass on one run and fail on the next with the same inputs,
+# and so can a test of it that sets no seed. An autouse fixture seeds
+# random, numpy and sympy from a fixed value before each test, so every
+# test starts from the same state in every run, and coverage, the test
+# runs and mutation see the same outcome for the same source. A failure
+# that came from chance goes away; a real failure still fails.
+#
+# The optional random-number modules are imported once at collection, not
+# inside the fixture, so each test's measured time is the test's own and
+# not a one-time numpy or sympy import charged to whichever test runs
+# first.
+import pytest as _pytest
+import random as _r
+
+try:
+    import numpy as _np
+except ImportError:
+    _np = None
+try:
+    from sympy.core import random as _sr
+except ImportError:
+    _sr = None
+
+
+@_pytest.fixture(autouse=True)
+def _deterministic_random():
+    _r.seed(0)
+    if _np is not None:
+        _np.random.seed(0)
+    if _sr is not None and hasattr(_sr, "seed"):
+        _sr.seed(0)
+    yield
+
+
+# Hypothesis generates the same examples in every run, so a counterexample
+# found by chance cannot make one run fail and the next pass. Nothing
+# happens when hypothesis is not installed.
+try:
+    from hypothesis import settings as _hyp_settings
+    _hyp_settings.register_profile("deterministic", derandomize=True)
+    _hyp_settings.load_profile("deterministic")
+except Exception:
+    pass
+
+
+# Shared global state is reset before every test, so a test's verdict does
+# not depend on what ran before it. Libraries keep mutable module-level
+# state (xarray's options, numpy's error and print settings, the warnings
+# filter) that a test can change without restoring it. Mutation runs the
+# whole suite against each mutant, so such a change can hide or expose a
+# mutant's effect on a later test, and whether a test kills a mutant then
+# depends on the order (killed alone, not in the full suite). The state is
+# copied once at collection and restored before each test, in the same
+# process. A library that is not installed is skipped. xarray's options
+# are read from its option table: xarray.get_options exists only from
+# 0.19 on, and a copy taken through it left the reset off without notice
+# in older versions.
+try:
+    import warnings as _wmod
+    _WARN_SNAP = _wmod.filters[:]
+except Exception:
+    _wmod = None
+    _WARN_SNAP = None
+try:
+    _NP_ERR_SNAP = _np.geterr() if _np is not None else None
+    _NP_PRINT_SNAP = dict(_np.get_printoptions()) if _np is not None else None
+except Exception:
+    _NP_ERR_SNAP = _NP_PRINT_SNAP = None
+try:
+    import xarray as _xrmod
+    from xarray.core.options import OPTIONS as _XR_OPTIONS
+    _XR_SNAP = dict(_XR_OPTIONS)
+except Exception:
+    _xrmod = None
+    _XR_OPTIONS = None
+    _XR_SNAP = None
+
+# The namespace of the module under test is shared state too: a test can
+# rebind one of its attributes (a tuple of types, a function), and without
+# a restore every later test in the suite sees the change. When the run
+# names the target file, the loaded module's namespace is copied before
+# the first test and restored before each test: rebound names get their
+# values back, added names are removed and deleted names return. A change
+# inside an attribute's value is left to the resets above. Nothing happens
+# when no target is named.
+import os as _os_target
+
+_TARGET_FILE = _os_target.environ.get("LANGADAPTER_TARGET_MODULE_FILE")
+if not _TARGET_FILE:
+    # A mutation run names the target relative to the mutated tree and
+    # passes the tree's root separately. Joining the two here gives it the
+    # per-test restore that other runs get from the absolute path, so a
+    # verdict does not depend on which kind of run measured it.
+    _REL_TARGET = _os_target.environ.get("LANGADAPTER_MUTATION_TARGET")
+    if _REL_TARGET:
+        _ROOT_TARGET = (
+            _os_target.environ.get("LANGADAPTER_MUTATION_SOURCE_ROOT")
+            or _os_target.getcwd()
+        )
+        _TARGET_FILE = _os_target.path.join(_ROOT_TARGET, _REL_TARGET)
+# A loaded module's __file__ names an existing file, so a target path
+# that does not exist matches no module. It is dropped once here;
+# otherwise the fixture would resolve every loaded module's path before
+# each test (file system calls that grow with the suite) when the target
+# is a relative path the working directory does not resolve.
+if _TARGET_FILE:
+    try:
+        if not _os_target.path.exists(_os_target.path.realpath(_TARGET_FILE)):
+            _TARGET_FILE = None
+    except Exception:
+        _TARGET_FILE = None
+_TARGET_MOD = None
+_TARGET_SNAP = None
+
+
+def _find_target_module():
+    import sys as _sys_target
+    try:
+        wanted = _os_target.path.realpath(_TARGET_FILE)
+    except Exception:
+        return None
+    for _mod in list(_sys_target.modules.values()):
+        _file = getattr(_mod, "__file__", None)
+        if not _file:
+            continue
+        try:
+            if _os_target.path.realpath(_file) == wanted:
+                return _mod
+        except Exception:
+            continue
+    return None
+
+
+@_pytest.fixture(autouse=True)
+def _reset_global_state():
+    if _np is not None and _NP_ERR_SNAP is not None:
+        _np.seterr(**_NP_ERR_SNAP)
+    if _np is not None and _NP_PRINT_SNAP is not None:
+        _np.set_printoptions(**{k: v for k, v in _NP_PRINT_SNAP.items()
+                                if k != "legacy"})
+    if _XR_OPTIONS is not None and _XR_SNAP is not None:
+        # Only changed options are set again: setting some old options warns
+        # on every call. A value set_options refuses is restored in the table.
+        _xr_changed = {_k: _v for _k, _v in _XR_SNAP.items()
+                       if _XR_OPTIONS.get(_k) != _v}
+        if _xr_changed:
+            try:
+                _xrmod.set_options(**_xr_changed)
+            except Exception:
+                _XR_OPTIONS.update(_xr_changed)
+    global _TARGET_MOD, _TARGET_SNAP
+    if _TARGET_FILE and _TARGET_MOD is None:
+        _TARGET_MOD = _find_target_module()
+        if _TARGET_MOD is not None:
+            _TARGET_SNAP = dict(_TARGET_MOD.__dict__)
+    if _TARGET_MOD is not None and _TARGET_SNAP is not None:
+        _d = _TARGET_MOD.__dict__
+        for _k in list(_d):
+            if _k not in _TARGET_SNAP:
+                del _d[_k]
+            elif _d[_k] is not _TARGET_SNAP[_k]:
+                _d[_k] = _TARGET_SNAP[_k]
+        for _k, _v in _TARGET_SNAP.items():
+            if _k not in _d:
+                _d[_k] = _v
+    if _wmod is not None and _WARN_SNAP is not None:
+        _wmod.filters[:] = _WARN_SNAP
+    yield
+
+
+# Per-test leak record. A test that leaves the shared state restored above
+# changed passes under this instrument but can break a later test when its
+# file runs without it. When LANGADAPTER_LEAK_JOURNAL names a file (the backend
+# sets it for the runs that ask for the record), a fixture compares the
+# state a test started in, after the restore, with the state it left once
+# its own fixtures (monkeypatch included) were torn down: names of the
+# module under test added, rebound or removed, xarray's options, and
+# numpy's error and print settings. Dunder names are the interpreter's
+# bookkeeping (``__warningregistry__`` appears in any module that issued a
+# warning) and are left out. Each test with a difference appends one JSON
+# line; the first line marks that the record was taken. The fixture depends
+# on the restore, so it starts after it, and it swallows every failure of
+# its own, so it never changes a verdict. It does not exist when the
+# variable is unset.
+_LEAK_JOURNAL = _os_target.environ.get("LANGADAPTER_LEAK_JOURNAL")
+if _LEAK_JOURNAL:
+    import json as _leak_json
+
+    def _leak_write(obj):
+        try:
+            with open(_LEAK_JOURNAL, "a", encoding="utf-8") as fh:
+                fh.write(_leak_json.dumps(obj, sort_keys=True) + "\n")
+        except Exception:
+            pass
+
+    def _leak_numpy():
+        try:
+            return dict(_np.geterr()), dict(_np.get_printoptions())
+        except Exception:
+            return None, None
+
+    def _leak_changed(before, after):
+        if before is None or after is None:
+            return []
+        return sorted(k for k in set(before) | set(after)
+                      if k not in before or k not in after
+                      or before[k] is not after[k] and before[k] != after[k])
+
+    _leak_write({"record": _os_target.getpid()})
+
+    @_pytest.fixture(autouse=True)
+    def _leak_record(request, _reset_global_state):
+        try:
+            module = (dict(_TARGET_MOD.__dict__)
+                      if _TARGET_MOD is not None else None)
+            options = dict(_XR_OPTIONS) if _XR_OPTIONS is not None else None
+            numpy = _leak_numpy() if _np is not None else (None, None)
+        except Exception:
+            module = options = None
+            numpy = (None, None)
+        yield
+        try:
+            found = {}
+            if module is not None and _TARGET_MOD is not None:
+                now = _TARGET_MOD.__dict__
+
+                def _named(k):
+                    return not (k.startswith("__") and k.endswith("__"))
+
+                added = sorted(k for k in now if k not in module and _named(k))
+                rebound = sorted(k for k in now if k in module and _named(k)
+                                 and now[k] is not module[k])
+                removed = sorted(k for k in module if k not in now
+                                 and _named(k))
+                if added or rebound or removed:
+                    found["module"] = {"added": added, "rebound": rebound,
+                                       "removed": removed}
+            if options is not None and _XR_OPTIONS is not None:
+                changed = _leak_changed(options, dict(_XR_OPTIONS))
+                if changed:
+                    found["xarray_options"] = changed
+            if _np is not None:
+                errors, printing = _leak_numpy()
+                for key, before, after in (
+                        ("numpy_errors", numpy[0], errors),
+                        ("numpy_print", numpy[1], printing)):
+                    changed = _leak_changed(before, after)
+                    if changed:
+                        found[key] = changed
+            if found:
+                found["test"] = request.node.nodeid
+                _leak_write(found)
+        except Exception:
+            pass
+
+
+# Per-test timeout journal. When the mutation run's time limit kills the
+# run of one mutant, pytest reports nothing, so the journal tells which test
+# was running, detecting or hanging on the mutant. When
+# LANGADAPTER_TIMEOUT_EVIDENCE_DIR is set (the mutation engine sets it for its
+# runs of one mutant), each event is written as one JSON line to an
+# append-only journal and flushed at once, so a killed process leaves every
+# event up to the kill. It is not synced to disk: an fsync per event can take
+# tens of milliseconds on a virtual disk, time the per-mutant limit, set by a
+# run without the journal, does not include. The session's first line holds
+# the sha1 of the module under mutation (named by LANGADAPTER_JOURNAL_MODULE,
+# which names it for the journal only, else by LANGADAPTER_MUTATION_TARGET,
+# which also turns on the instrument's per-test restore; resolved against
+# LANGADAPTER_MUTATION_SOURCE_ROOT, else this conftest's source root, else the
+# working directory). The engine derives the same sha1 from a job's
+# mutation diff, so it pairs each journal block with its job. The sha1 is
+# of the module's text as the engine reads its copy (UTF-8, universal
+# newlines), so a module with CRLF line endings pairs too. The hooks exist
+# in pytest 3 to 8. Nothing is written when the variable is unset.
+import os as _os
+
+_EVID_DIR = _os.environ.get("LANGADAPTER_TIMEOUT_EVIDENCE_DIR")
+if _EVID_DIR:
+    import hashlib as _hashlib
+    import json as _json
+
+    # The path is resolved once at import, before any test runs. The hooks
+    # run while a test's patches are in force, and a test may have replaced
+    # functions of os (os.fspath among them), so a write calls no os.path
+    # function and ignores whatever a replaced function raises. The journal
+    # is best effort: the run's verdict never depends on it.
+    _EVID_JOURNAL = _os.path.join(_EVID_DIR, "journal.jsonl")
+
+    def _evid_write(obj):
+        try:
+            with open(_EVID_JOURNAL, "a", encoding="utf-8") as fh:
+                fh.write(_json.dumps(obj) + "\n")
+                fh.flush()
+        except Exception:
+            pass
+
+    def _evid_module_sha():
+        rel = (_os.environ.get("LANGADAPTER_JOURNAL_MODULE")
+               or _os.environ.get("LANGADAPTER_MUTATION_TARGET"))
+        if not rel:
+            return "unknown"
+        # The module under mutation lies under the source root this
+        # conftest imports from, which need not be the working directory.
+        root = (_os.environ.get("LANGADAPTER_MUTATION_SOURCE_ROOT")
+                or globals().get("_PROJECT_ROOT") or _os.getcwd())
+        try:
+            with open(_os.path.join(root, rel), encoding="utf-8") as fh:
+                return _hashlib.sha1(fh.read().encode("utf-8")).hexdigest()
+        except (OSError, ValueError):
+            return "unknown"
+
+    def pytest_sessionstart(session):
+        try:
+            _os.makedirs(_EVID_DIR, exist_ok=True)
+        except OSError:
+            pass
+        _evid_write({"run": _os.getpid(), "module_sha": _evid_module_sha()})
+
+    def pytest_runtest_logstart(nodeid, location):
+        _evid_write({"start": nodeid, "pid": _os.getpid()})
+
+    def pytest_runtest_logreport(report):
+        if report.when == "call" or report.outcome == "failed":
+            _evid_write({"done": report.nodeid, "when": report.when,
+                         "outcome": report.outcome, "pid": _os.getpid()})
+
+    def pytest_sessionfinish(session, exitstatus):
+        _evid_write({"end": _os.getpid(), "exit": int(exitstatus)})
+
+# Dask runs on its synchronous scheduler. The default threaded scheduler
+# depends on the host's worker count and timing, so a test that computes
+# through dask could pass on one host and fail on another. Nothing
+# happens when dask is not installed.
+try:
+    import dask as _dask
+    _dask.config.set(scheduler="synchronous")
+except Exception:
+    pass

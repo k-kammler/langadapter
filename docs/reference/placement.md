@@ -1,0 +1,3 @@
+# Timing placement
+
+::: langadapter.placement

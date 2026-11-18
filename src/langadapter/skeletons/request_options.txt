@@ -1,0 +1,8 @@
+def request_options(self, purpose: str, *, target=None, traceback="short",
+                    stop_at_first_failure=False, record_leaks=False,
+                    session_seed=None, reverse_order=False,
+                    leave_out_timing_plugins=False) -> dict:
+    """The fields this language adds to a consumer's request for the run
+    ``purpose`` (langadapter.adapter.RUN_PURPOSES), from the consumer's
+    wishes for it."""
+    ...

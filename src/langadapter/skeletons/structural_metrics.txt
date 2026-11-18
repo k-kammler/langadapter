@@ -1,0 +1,11 @@
+# The metrics register only with both methods. optimization_metrics returns
+# exactly the keys cyclomatic_sum, loop_count, loop_max_nesting,
+# recursive_function_count, function_count, class_count, io_call_count and
+# nloc, each a whole number, or None where the parser cannot read the source.
+def structural_parser_identity(self) -> str:
+    """The parser and grammar the metrics come from."""
+    ...
+
+def optimization_metrics(self, source: str) -> dict:
+    """The counts of ``source`` under the eight keys above."""
+    ...

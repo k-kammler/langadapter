@@ -1,0 +1,4 @@
+def operation_context_issue(self, name: str) -> str:
+    """Why the operation ``name`` cannot run in this context, as a reason,
+    or ""."""
+    ...

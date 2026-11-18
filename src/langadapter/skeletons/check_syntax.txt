@@ -1,0 +1,4 @@
+def validate_source(self, source: str) -> SourceValidation:
+    """Whether the language's parser reads ``source``, with the first
+    error's line."""
+    ...

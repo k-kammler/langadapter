@@ -1,0 +1,9 @@
+def target_identity(self, target: str) -> TargetIdentity:
+    """The target source a test is screened against, which analyze_validity
+    takes."""
+    ...
+
+def analyze_validity(self, source: str, target) -> PolicyReport:
+    """The places where a test reads the implementation instead of calling
+    it."""
+    ...

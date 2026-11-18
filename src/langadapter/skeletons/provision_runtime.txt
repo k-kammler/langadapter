@@ -1,0 +1,6 @@
+@classmethod
+def provision_runtime(cls, request, *, store, name, environment=None, log=None) -> str:
+    """The runtime of an environment made for ``request`` (a version and a
+    requirements file), kept as ``name`` under ``store`` and reused while its
+    inputs stay the same. ``log`` receives progress lines."""
+    ...

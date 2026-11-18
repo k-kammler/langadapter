@@ -1,0 +1,8 @@
+def setup_files(self, root: str, test_paths) -> tuple:
+    """The files the language's runner loads beside ``test_paths`` of the
+    suite at ``root``, such as pytest's conftest.py."""
+    ...
+
+def shared_setup_files(self, directory: str) -> tuple:
+    """The setup files a prepared suite in ``directory`` holds."""
+    ...

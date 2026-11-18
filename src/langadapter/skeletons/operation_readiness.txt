@@ -1,0 +1,5 @@
+def operation_readiness(self, name: str, report: la.CapabilityReport):
+    """The readiness of the operation ``name`` from the probe's ``report``,
+    as a la.Capability named like the operation, or None when the probe did
+    not check it."""
+    ...

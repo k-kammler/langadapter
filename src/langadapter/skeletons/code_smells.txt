@@ -1,0 +1,3 @@
+def code_smells(self, paths):
+    """The count of a linter's findings in ``paths``."""
+    ...

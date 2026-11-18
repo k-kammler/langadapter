@@ -1,0 +1,5 @@
+def order_dependent_mock_warnings(self, source: str) -> list:
+    """The tests of ``source`` that assert on a named element of a mock's
+    side_effect list, whose order a scheduler in the code under test can
+    change."""
+    ...

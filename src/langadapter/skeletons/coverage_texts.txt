@@ -1,0 +1,8 @@
+def coverage_texts(self, coverage) -> dict:
+    """A run's coverage as text for the caller's records: the covered lines
+    and each missed branch as "source->destination"."""
+    ...
+
+# Where a coverage matrix is measured in the project itself, not in a
+# prepared copy:
+coverage_matrix_in_place = True

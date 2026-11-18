@@ -1,0 +1,4 @@
+def run_counts(self, run) -> dict:
+    """A run's collected, passed, failed and errored tests as the
+    language's runner counts them."""
+    ...

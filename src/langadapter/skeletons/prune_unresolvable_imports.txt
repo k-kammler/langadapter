@@ -1,0 +1,5 @@
+def prune_unresolvable_imports(self, source: str) -> SourceResult:
+    """The test file without the imports that do not resolve in the project,
+    through langadapter.templates.prune_units with the language's look for
+    the failing imports and their removal."""
+    ...

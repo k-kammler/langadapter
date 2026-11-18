@@ -1,0 +1,4 @@
+def project_test_files(self) -> list:
+    """The test files the language's runner collects in the project as
+    the project configures them."""
+    ...

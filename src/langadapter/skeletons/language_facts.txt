@@ -1,0 +1,7 @@
+def language_facts(self) -> la.LanguageFacts:
+    """The language's facts: its name, the test framework, the code fence,
+    the runtime's version and language level, the test file, test function
+    and test class patterns, the per-test timeout marker, whether a
+    reduction keeps unmatched evidence and the patterns of the warnings
+    that mark a test leaving shared state behind."""
+    ...

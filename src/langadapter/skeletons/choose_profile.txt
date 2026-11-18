@@ -1,0 +1,5 @@
+def choose_profile(self):
+    """The VersionProfile (langadapter.versions) of the runtime version the
+    adapter found, from a subclass whose refusal() gives the reason for a
+    version the adapter does not support."""
+    ...

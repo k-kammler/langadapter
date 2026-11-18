@@ -1,0 +1,7 @@
+def run_suite(self, request: SuiteRunRequest) -> SuiteRun:
+    """Run request.suite's test files with the language's test runner and
+    return a SuiteRun with each test's TestOutcome and the run's outcome:
+    COMPLETED, TEST_FAILURES, COLLECTION_FAILED when a file does not load,
+    NO_TESTS, TIMED_OUT, INFRASTRUCTURE_FAILURE when a tool failed,
+    MISSING_SETUP or UNSUPPORTED."""
+    ...

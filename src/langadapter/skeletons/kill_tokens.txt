@@ -1,0 +1,10 @@
+def kill_tokens(self, kill_matrix, test_ids):
+    """Each test's kill tokens (K:<mutant id>) from a stored kill matrix's
+    named killers, for the tests ``test_ids``, and the killers that match
+    none."""
+    ...
+
+def pool_kills(self, kill_matrix, file_to_index, test_ids_by_index) -> dict:
+    """Kill tokens by suite and test for the uniquely matched tests of the
+    suites ``file_to_index`` names."""
+    ...

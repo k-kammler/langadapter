@@ -1,0 +1,3 @@
+def merge_sources(self, first: str, second: str, *, separator: str) -> SourceResult:
+    """The two test files folded into one, their name collisions resolved."""
+    ...

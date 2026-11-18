@@ -1,0 +1,11 @@
+#!/bin/sh
+# A configure script in miniature: it writes, into the directory it runs in, a
+# Makefile that builds the sources where they are.
+srcdir=$(cd "$(dirname "$0")" && pwd)
+{
+    printf 'CC = %s\n' "${CC:-cc}"
+    printf 'CFLAGS = -O2 -I%s/src\n\n' "$srcdir"
+    printf 'app: main.o calc.o\n\t$(CC) -o $@ main.o calc.o\n\n'
+    printf 'main.o: %s/src/main.c\n\t$(CC) $(CFLAGS) -c %s/src/main.c -o main.o\n\n' "$srcdir" "$srcdir"
+    printf 'calc.o: %s/src/calc.c\n\t$(CC) $(CFLAGS) -c %s/src/calc.c -o calc.o\n' "$srcdir" "$srcdir"
+} > Makefile

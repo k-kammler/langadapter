@@ -1,0 +1,4 @@
+# Runs in a container the user prepared:
+source_execution_kinds = ("local", "container")
+test_execution_kinds = ("local", "container")
+mutation_execution_kinds = ("local", "container")

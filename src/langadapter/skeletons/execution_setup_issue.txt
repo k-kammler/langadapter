@@ -1,0 +1,4 @@
+def execution_setup_issue(self) -> str:
+    """A prerequisite of running the project's tools that is known to be
+    missing without starting a tool, as a reason, or ""."""
+    ...

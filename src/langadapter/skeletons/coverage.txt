@@ -1,0 +1,3 @@
+# Coverage is part of run_suite: when request.coverage_target names a
+# source file, the returned SuiteRun's coverage is a CoverageObservation
+# of that file's statements and covered lines, branches and taken branches.

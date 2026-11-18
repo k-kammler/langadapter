@@ -1,0 +1,3 @@
+def strip_module_level_skips(self, source: str) -> SourceResult:
+    """The test file without the statements that skip all of it."""
+    ...

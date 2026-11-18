@@ -1,0 +1,4 @@
+def profile_suite(self, request):
+    """One run of the request's suite under the language's profiler
+    (langadapter.runs.SuiteProfile): each function's calls and times."""
+    ...

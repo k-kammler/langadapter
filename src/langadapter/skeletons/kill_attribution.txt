@@ -1,0 +1,3 @@
+# Name, for each killed mutant, the tests that kill it
+# (Mutant.killing_tests), and declare it:
+mutation_evidence_granularity = ("aggregate", "per_mutant", "per_test")

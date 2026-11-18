@@ -1,0 +1,4 @@
+def metric_providers(self):
+    """The language's own metric providers (langadapter.MetricProvider),
+    registered on every adapter object of the language."""
+    return ()

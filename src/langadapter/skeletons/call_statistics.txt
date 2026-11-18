@@ -1,0 +1,4 @@
+def call_statistics(self, source: str):
+    """The call sites of ``source`` counted by the called name, or None when
+    it does not parse (with the scoped metrics)."""
+    ...

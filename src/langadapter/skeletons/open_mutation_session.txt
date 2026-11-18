@@ -1,0 +1,11 @@
+native_mutation_engines = ("the-tool",)
+
+def mutation_operators(self, engine: str) -> OperatorCatalogue:
+    """The mutation tool's operators."""
+    ...
+
+def open_mutation_session(self, engine: str, workers: int = 1, **options) -> MutationSession:
+    """A MutationSession whose measure returns a MutationRun with each
+    mutant's id, location, change text and status, and whose release
+    releases what the session holds."""
+    ...

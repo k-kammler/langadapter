@@ -1,0 +1,3 @@
+def benchmark(self, request):
+    """The times of repeated runs of a suite."""
+    ...

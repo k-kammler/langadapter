@@ -1,0 +1,5 @@
+# One test per line: test <name>: <left> == <right>
+test doubles: double(2) == 4
+test adds: add(2, 3) == 5
+test positive: sign(5) == 1
+test negative: sign(-3) == -1

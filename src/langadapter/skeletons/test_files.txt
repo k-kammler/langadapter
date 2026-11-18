@@ -1,0 +1,4 @@
+def test_files(self, paths) -> list:
+    """Each path, with a directory replaced by the test files the language's
+    runner collects in it, at any depth."""
+    ...

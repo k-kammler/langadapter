@@ -1,0 +1,4 @@
+def delivered_case(self, test, outcome: str) -> tuple:
+    """A test of a run as delivered, as text for the caller's records: its
+    id, its name with its parameters, and its outcome."""
+    ...

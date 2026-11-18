@@ -1,0 +1,5 @@
+def scoped_optimization_metrics(self, source: str):
+    """The structural metrics of each function of ``source``, with its own
+    complexity, beside the file's (only with the structural metrics
+    methods)."""
+    ...

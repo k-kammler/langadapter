@@ -1,0 +1,5 @@
+def project(self):
+    """Whether the project's build resolves, such as its dependencies and
+    class path: a ProjectResolution (langadapter.adapter) with the reason
+    when it does not."""
+    ...

@@ -1,0 +1,8 @@
+@classmethod
+def setup_questions(cls, project_dir, probe, *, consumer="the caller"):
+    """The questions a setup asks for the project at ``project_dir``. By default
+    each setting of project_settings is asked with its purpose. An override
+    offers what it finds, such as the runtime on PATH."""
+    yield SetupQuestion(f"{cls.language}.runtime", "The program that runs the tests",
+                        setting="runtime", default=probe.which(cls.runtime),
+                        check=lambda answer: None if probe.is_file(answer) else "no such file")

@@ -1,0 +1,5 @@
+def run_as_delivered(self, request, *, sources=None):
+    """Each test file run alone, as a user who copied it would run it, each
+    in what is left of ``request.timeout_s``, which bounds the whole run.
+    ``sources`` maps a test file's path to the text to run in its place."""
+    ...

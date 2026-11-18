@@ -1,0 +1,5 @@
+def prune_collection_breakers(self, source: str, *, timeout_s: float) -> SourceResult:
+    """The test file without the units that keep it from loading, through
+    langadapter.templates.repair_loading with the language's load step and
+    removal."""
+    ...

@@ -1,0 +1,5 @@
+def test_units(self, source: str):
+    """Each test of the test file ``source`` as a TestUnit (its qualified
+    name and its span), or None when it does not parse. LangAdapter builds
+    removing, counting and listing tests on it."""
+    ...
