@@ -207,7 +207,7 @@ def screen(source: str, identity: TargetIdentity) -> Tuple[SuiteAuditFlag, ...]:
             add(node, "source_discovery", "discovers files or directories")
         if name == "setAccessible":
             add(node, "reflective_access",
-                "opens a private member with setAccessible (allowed; review only)")
+                "opens a private member with setAccessible (allowed, for review only)")
         if name in ("getTask", "run") and any(
                 (_string(n) or "") and len(_string(n)) >= 200
                 for n in _treesitter.walk(node)):

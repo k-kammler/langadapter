@@ -371,7 +371,7 @@ class JavaAdapter(JavaSources):
     def delivered_order_refusal(self, reverse: bool) -> Optional[str]:
         """Why a reverse order is refused: JUnit orders a class's tests itself."""
         if reverse:
-            return ("JUnit orders a class's tests itself; a reverse-order "
+            return ("JUnit orders a class's tests itself, so a reverse-order "
                     "run is not offered for Java")
         return None
 
@@ -694,11 +694,11 @@ class JavaAdapter(JavaSources):
                               "installed in the calling process")
             if absent:
                 return Capability(name, Availability.MISSING_SETUP,
-                                  "; ".join(absent))
+                                  ". ".join(absent))
             return Capability(name, Availability.AVAILABLE)
 
         return report(Outcome.INFRASTRUCTURE_FAILURE if failed else Outcome.COMPLETED,
-                      "; ".join(f"{name}: {reason}" for name, reason in failed.items()), (
+                      ". ".join(f"{name}: {reason}" for name, reason in failed.items()), (
             needs("suite_runs", "junit-platform-console"),
             needs("coverage", "junit-platform-console", "jacoco"),
             needs("per_test_evidence", "junit-platform-console", "jacoco"),
@@ -987,7 +987,7 @@ class JavaAdapter(JavaSources):
         """Refuse a PIT session's ``distributor``, ``allow_fewer_workers``
         and ``settings`` with ``InvalidRequest``: it takes ``workers`` only."""
         if distributor is not None or allow_fewer_workers or settings is not None:
-            raise InvalidRequest("options", "PIT sessions take workers only; distributor, allow_fewer_workers and settings are not supported")
+            raise InvalidRequest("options", "PIT sessions take workers only, not distributor, allow_fewer_workers or settings")
 
     # Request parts
 
@@ -1005,7 +1005,7 @@ class JavaAdapter(JavaSources):
             return "Java local context cannot use a container executor"
         framework = self.context.test_framework
         if framework.source != "project" or framework.path is not None:
-            return "Java test_framework overrides are not implemented; use the project's configuration"
+            return "Java test_framework overrides are not implemented. Use the project's configuration"
         return ""
 
     def execution_setup_issue(self) -> str:

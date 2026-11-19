@@ -2,6 +2,36 @@
 
 Each release's changes, newest first.
 
+## 0.1.1
+
+Bug-fix release. It changes:
+
+- On systems other than Linux, the C adapter's runs, operations and
+  capability probe report first that the C adapter runs on Linux only in
+  this version, on Windows in WSL.
+- The C adapter has a setup check: `inspect_project` and `verify_project`
+  report the compiler with its gcov, the extra's modules, `stdbuf`, `prlimit`
+  and Mull with its clang, each with its next step. The tool check starts
+  each tool once.
+- `langadapter check` names first why a language does not run on this
+  system (`Report.system_issue`), reads no consumer as ready there and ends
+  with status 1.
+- When Java's tool check could not resolve the build, its report says
+  which steps it left to the first run, and its next step names a tool
+  check that may download or a run with network access.
+- A Java tool check that may download (`allow_acquisition`) also downloads
+  and starts JaCoCo and PIT once, so a new machine completes the check
+  without a run.
+- `langadapter --version` prints the installed version.
+- A toolchain part's refusal names `langadapter toolchains LANGUAGE`, and
+  the C part's install line updates the package lists first.
+- The toolchains guide says what each part's closing check runs: the
+  example's tests, their coverage and a mutation session.
+- Messages and some texts in results read as plain sentences with the
+  same meaning, among them a derived kill matrix's assumption, Java's
+  setAccessible review flag, the note on a zero elapsed time and the time
+  scopes of C benchmarks.
+
 ## 0.1.0
 
 First public release. It provides:

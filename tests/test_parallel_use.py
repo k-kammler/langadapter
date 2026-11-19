@@ -1,5 +1,5 @@
 """An engine's units of work side by side (run_parallel): a plain pool outside
-a prepared use; inside one, the use lends itself to the threads, whose
+a prepared use, and inside one, the use lends itself to the threads, whose
 commands are checked as the use's own, each thread writing in a directory of
 its own, and the use's other refusals stay."""
 import contextvars

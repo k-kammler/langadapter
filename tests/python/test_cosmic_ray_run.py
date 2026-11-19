@@ -1258,7 +1258,7 @@ def test_cleanup_http_workers_stops_each_tree_and_removes_clones(
 
 
 def test_cleanup_http_workers_retains_clones_on_stop_failure(tmp_path, monkeypatch):
-    """A failed stop is reported; clones remain while workers may still use them."""
+    """A failed stop is reported, and clones remain while workers may still use them."""
     class BadProc:
         def terminate(self):
             raise OSError("already dead")

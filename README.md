@@ -116,15 +116,15 @@ The documentation site is <https://k-kammler.github.io/langadapter/>.
 The guides also cover containers, source analysis and settings, and the
 explanations cover outcomes, prepared copies of a project and environment
 selection. The guides are also in the repository's
-[docs directory](https://github.com/k-kammler/langadapter/tree/v0.1.0/docs)
+[docs directory](https://github.com/k-kammler/langadapter/tree/v0.1.1/docs)
 and installed with the package under `share/doc/langadapter/docs`, without
 the API reference, which is on the site only: in the installed copy,
 Python's `help()` shows each name's documentation. Building the site
 yourself is described in
-[CONTRIBUTING.md](https://github.com/k-kammler/langadapter/blob/v0.1.0/CONTRIBUTING.md).
+[CONTRIBUTING.md](https://github.com/k-kammler/langadapter/blob/v0.1.1/CONTRIBUTING.md).
 What the library depends on and downloads, with each license, is in
-[THIRD_PARTY_NOTICES.md](https://github.com/k-kammler/langadapter/blob/v0.1.0/THIRD_PARTY_NOTICES.md).
+[THIRD_PARTY_NOTICES.md](https://github.com/k-kammler/langadapter/blob/v0.1.1/THIRD_PARTY_NOTICES.md).
 
 ## License
 
-MIT, see [LICENSE](https://github.com/k-kammler/langadapter/blob/v0.1.0/LICENSE).
+MIT, see [LICENSE](https://github.com/k-kammler/langadapter/blob/v0.1.1/LICENSE).

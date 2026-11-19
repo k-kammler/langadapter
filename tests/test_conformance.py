@@ -104,7 +104,7 @@ def test_the_python_adapter_keeps_the_contract(tmp_path):
     ("counts", "must add up to collected"),
     ("outcome", "test_failures exactly when"),
     ("foreign_test", "is not in a declared test file"),
-    ("coverage", "an adapter that measures coverage reports it available in capabilities()"),
+    ("coverage", "An adapter that measures coverage reports it available in capabilities()"),
     ("unclaimed", "is not claimed by broken"),
     ("nothing", "no test outcome for the declared test file test_math.brk"),
     ("support", "support must be a LanguageSupport"),

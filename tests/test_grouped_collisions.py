@@ -189,7 +189,7 @@ def test_ejected_sources_line_up_with_the_input(tmp_path, ejected, reasons):
 def test_each_source_whose_validation_could_not_run_is_named_in_order(
         tmp_path, monkeypatch, language, checker):
     """A built-in answer is an infrastructure failure whose reason names
-    each source whose validation could not run, joined by "; "."""
+    each source whose validation could not run, joined by ". "."""
     first, second = SOURCES[language]
     adapter = native_adapter(tmp_path, monkeypatch, language, lambda source: SourceValidation(
         "timeout", f"no verdict for the {'first' if source == first else 'second'}", 0, 0,
@@ -197,7 +197,7 @@ def test_each_source_whose_validation_could_not_run_is_named_in_order(
     result = adapter.sources.resolve_collisions([first, second])
     assert result.status is SourceStatus.INFRASTRUCTURE_FAILURE and result.value is None
     assert result.reason == (
-        f"source 0: {checker} could not validate source 0: no verdict for the first; "
+        f"source 0: {checker} could not validate source 0: no verdict for the first. "
         f"source 1: {checker} could not validate source 1: no verdict for the second")
 
 

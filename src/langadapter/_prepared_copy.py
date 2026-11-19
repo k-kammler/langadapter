@@ -416,8 +416,8 @@ class PreparedCopy:
             if isinstance(exc, (KeyboardInterrupt, SystemExit, subprocess.TimeoutExpired)):
                 raise
             failure = WorkspacePreparationFailed(
-                f"project copy failed; retained roots: {owned.root}, {baseline.root}; "
-                f"receipts: {owned.receipt}, {baseline.receipt}; "
+                f"project copy failed. Retained roots: {owned.root}, {baseline.root}. "
+                f"Receipts: {owned.receipt}, {baseline.receipt}. "
                 f"{type(exc).__name__}: {exc}")
             failure._langadapter_prepared_copy = prepared_copy
             raise failure from exc
@@ -521,8 +521,8 @@ class PreparedCopy:
             if isinstance(exc, (KeyboardInterrupt, SystemExit, subprocess.TimeoutExpired)):
                 raise
             failure = WorkspacePreparationFailed(
-                f"container project copy failed; retained roots: {owned.root}, {baseline.root}; "
-                f"receipts: {owned.receipt}, {baseline.receipt}; "
+                f"container project copy failed. Retained roots: {owned.root}, {baseline.root}. "
+                f"Receipts: {owned.receipt}, {baseline.receipt}. "
                 f"{type(exc).__name__}: {exc}")
             failure._langadapter_prepared_copy = prepared_copy
             raise failure from exc
@@ -582,8 +582,8 @@ class PreparedCopy:
             descriptor = os.open(self.lease, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
         except FileExistsError as exc:
             raise WorkspaceBusy(
-                f"workspace has an active or uncertain lease: {self.lease}; "
-                "do not reclaim it automatically") from exc
+                f"workspace has an active or uncertain lease: {self.lease}. "
+                "Do not reclaim it automatically") from exc
         with os.fdopen(descriptor, "w", encoding="ascii") as stream:
             json.dump(record, stream, sort_keys=True)
         # An exception keeps the lease: a PID's absence does not show descendants ended.

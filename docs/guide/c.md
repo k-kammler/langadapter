@@ -3,7 +3,10 @@
 `langadapter.c.adapter.CAdapter` runs the tests of one C file of a project,
 measures the file's line and branch coverage with gcov (read through gcovr),
 reports each test's own coverage, and measures the file's mutants with Mull.
-It works on Linux only.
+It works on Linux only. On another system each of its operations and its
+capability report read missing setup with "the C adapter runs on Linux only in
+this version", which on Windows adds "on Windows in WSL", and
+`langadapter check c` names it in its second line and ends with status 1.
 
 ## What it needs
 
@@ -41,6 +44,17 @@ It works on Linux only.
 
 The C tests use utest.h, which LangAdapter ships, so a project needs no test
 framework of its own.
+
+The setup check, `langadapter.inspect_project("c", request)`, reports
+these needs as items: `runtime` for the compiler with its gcov, which it
+starts to read their versions, then `tree-sitter-c`, `gcovr` and
+`setuptools`, `stdbuf` for utest.h tests, `prlimit` when
+`c_address_space_limit` is set, and `mull` for Mull with its clang, required
+when the request names a mutation operation. A missing item gives its next
+step. The tool check, `langadapter.verify_project`, also starts each tool it
+found once. Without a usable compiler both read missing setup with the
+compiler's reason, and on another system than Linux with the system's
+refusal. Python tests of an extension have no C setup check yet.
 
 ## How it builds
 

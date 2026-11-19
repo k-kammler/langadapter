@@ -249,7 +249,7 @@ def test_a_namespace_packages_own_tests_run_against_its_extension(project, pytho
 
 def test_each_adapters_test_environment_reaches_only_its_runs(project, python_adapter, suite):
     """c_test_environment reaches the C adapter's runs, Python tests of its
-    extension among them; python_test_environment reaches only the Python
+    extension among them, and python_test_environment reaches only the Python
     adapter's own runs."""
     values = {"python_test_environment": "PURE_PYTHON=1", "c_test_environment": "C_ONLY=yes"}
     variables = CAdapter.context_environment(values)
@@ -821,7 +821,7 @@ def test_head_with_flag():
     assert every.row["crashed_in"] == ["test__calc.test_head_without_flag"]
     assert "killers_incomplete" not in every.row
     # The Python adapter retains a crashed run's scratch, with its receipt
-    # outside it; neither stays.
+    # outside it. Neither stays.
     del runs, first, every, session
     gc.collect()
     assert sorted(system_temp.iterdir()) == []

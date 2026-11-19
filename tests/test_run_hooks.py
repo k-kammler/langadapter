@@ -181,7 +181,7 @@ def test_java_and_the_default_add_nothing_and_a_purpose_is_checked(tmp_path):
         "evidence": {"remove_created_files": True}, "delivered": {"remove_created_files": True},
         "benchmark": {}, "coverage_matrix": {}, "collect": {}, "project": {}}
     assert java.delivered_order_refusal(True) == (
-        "JUnit orders a class's tests itself; a reverse-order run is not offered for Java")
+        "JUnit orders a class's tests itself, so a reverse-order run is not offered for Java")
     assert java.delivered_order_refusal(False) is None and plain.delivered_order_refusal(True) is None
     with pytest.raises(InvalidRequest, match="purpose"):
         _adapter(PythonAdapter, tmp_path).request_options("everything")
@@ -218,8 +218,8 @@ def test_python_expands_a_dir_with_the_project_s_python_files(tmp_path, config):
 
 def test_python_names_the_files_pytest_collects_not_those_a_pattern_matches(tmp_path):
     """A directory pytest does not enter and a test file without tests count
-    for nothing; a test file pytest could not collect counts, after the
-    collected ones; a file stays as given."""
+    for nothing. A test file pytest could not collect counts, after the
+    collected ones. A file stays as given."""
     tests = tmp_path / "tests"
     (tests / "build").mkdir(parents=True)
     (tests / "test_a.py").write_text("def test_a():\n    pass\n", encoding="utf-8")
@@ -353,7 +353,7 @@ def test_collected_counts_every_test_with_an_outcome_and_none_unobserved(tmp_pat
 
 def test_python_counts_as_pytest_s_summary_and_the_default_as_the_run(tmp_path):
     """Python counts as pytest's own summary, from the run record
-    (``runner_counts``), not from text a test printed; a run without a
+    (``runner_counts``), not from text a test printed. A run without a
     record counts nothing. Another language counts the run's report."""
     run = _Run("collected 2 items\nE   AssertionError: 7 passed, 4 errors\n"
                "\x1b[31m==== 2 failed in 0.05s ====\x1b[0m\n", RunCounts(5, 1, 1, 0, 0),
@@ -611,7 +611,7 @@ def test_python_s_source_hooks_are_today_s_static_paths(tmp_path):
 
 def test_a_language_without_a_repair_judges_a_source_as_it_stands(tmp_path):
     """Without salvage_syntax a source the language's structure check
-    accepts stays valid and one it rejects is beyond repair; without any
+    accepts stays valid and one it rejects is beyond repair. Without any
     check the run judges it, so it stays."""
     class Checked(LangAdapter):
         language = "checked"

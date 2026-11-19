@@ -25,7 +25,7 @@ TARGET = ("def add(a, b):\n    return a + b\n\n\n"
 TESTS = ("from arith import add, is_positive\n\n\n"
          "def test_add():\n    assert add(2, 3) == 5\n\n\n"
          "def test_is_positive():\n    assert is_positive(1)\n")
-#: One mutant each: ``a - b`` fails test_add; ``n >= 0`` passes both tests.
+#: One mutant each: ``a - b`` fails test_add, and ``n >= 0`` passes both tests.
 OPERATORS = ["core/ReplaceBinaryOperator_Add_Sub",
              "core/ReplaceComparisonOperator_Gt_GtE"]
 
@@ -436,7 +436,7 @@ def test_a_local_run_journals_and_names_the_hanging_test(
 
 
 #: ``n < 0`` made ``n > 0`` ends the test process in the middle of
-#: test_check; ``n * 2`` made ``n + 2`` fails test_double.
+#: test_check, and ``n * 2`` made ``n + 2`` fails test_double.
 CRASH_TARGET = ("import os\n\n\n"
                 "def check(n):\n    if n < 0:\n        os._exit(3)\n"
                 "    return n\n\n\n"

@@ -17,7 +17,7 @@ from langadapter import _linux_command as command
 from langadapter._linux_job import ControlError, SupervisionUnavailable
 
 _REAL_CREATE = command._Control.create
-#: The harness replaces threading.Thread; a real stalled heartbeat needs it.
+#: The harness replaces threading.Thread. A real stalled heartbeat needs it.
 _REAL_THREAD = threading.Thread
 
 

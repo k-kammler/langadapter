@@ -36,12 +36,12 @@ their published SHA-1 when they are downloaded. The quick check
 never downloads, and the tool check downloads only when the request sets
 `allow_acquisition`, as
 [Setup checks](../explanation/environment-selection.md#setup-checks)
-explains with the build steps it tries. Only then does the tool check's test
-discovery fetch the JUnit launcher jars it checks. Without it, launcher jars
-not yet downloaded are left to the first run, or are missing setup when
-`LANGADAPTER_JAVA_TOOLS_OFFLINE` forbids downloads. Setup checks report an
-uncached JaCoCo or PIT jar as tried by the first run, or as missing setup
-when downloads are off. `probe_capabilities()` is not a setup check: it resolves the
+explains with the build steps it tries. Only then does the tool check fetch
+the jars it needs within its time limit: the JUnit launcher's for its test
+discovery, and JaCoCo's and PIT's before it starts them. Otherwise a jar not
+yet downloaded is left to the first run. When
+`LANGADAPTER_JAVA_TOOLS_OFFLINE` forbids downloads, either check reports such
+a jar as missing setup. `probe_capabilities()` is not a setup check: it resolves the
 project with its build and prepares the tool jars as a run does, so it
 downloads a missing jar unless downloads are off. The jars keep their own
 licenses. `THIRD_PARTY_NOTICES.md`, which ships with LangAdapter beside its

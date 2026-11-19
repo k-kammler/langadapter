@@ -152,7 +152,7 @@ def check_adapter(example: AdapterExample) -> Tuple[str, ...]:
                 problems.extend(_suite_run_problems(measured, example, coverage=True))
             elif measured.outcome not in (Outcome.UNSUPPORTED, Outcome.MISSING_SETUP):
                 problems.append("coverage: an adapter without available coverage must refuse a "
-                                f"coverage request, not answer {measured.outcome.value}; an "
+                                f"coverage request, not answer {measured.outcome.value}. An "
                                 "adapter that measures coverage reports it available in "
                                 "capabilities()")
 

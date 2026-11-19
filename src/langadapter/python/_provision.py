@@ -93,7 +93,7 @@ def provision(version: str, requirements: Optional[str], *, store: Path, name: s
             if time.time() > deadline:
                 raise RuntimeError(
                     f"timed out waiting for another process to finish provisioning "
-                    f"{venv_dir}; remove the stale lock {lock} if no provisioning is running")
+                    f"{venv_dir}. Remove the stale lock {lock} if no provisioning is running")
             time.sleep(2)
     try:
         # Another process may have finished while this one waited.
@@ -102,7 +102,7 @@ def provision(version: str, requirements: Optional[str], *, store: Path, name: s
         # A directory of these inputs without a complete marker is half made.
         if venv_dir.exists():
             shutil.rmtree(venv_dir)
-        log(f"provisioning Python {version} at {venv_dir} (first run for this project; "
+        log(f"provisioning Python {version} at {venv_dir} (first run for this project, "
             f"later runs reuse it)")
         env = dict(environment) if environment is not None else None
         install = [uv, "pip", "install", "--python", str(venv_python)]

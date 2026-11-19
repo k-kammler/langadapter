@@ -15,7 +15,7 @@ authors:
   - family-names: Kammler
     given-names: Kevin
 license: MIT
-version: 0.1.0
+version: 0.1.1
 repository-code: "https://github.com/k-kammler/langadapter"
 keywords:
   - testing

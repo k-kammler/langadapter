@@ -333,7 +333,7 @@ class WarmedIteration:
             _count(self.elapsed_ns, "elapsed_ns")
         object.__setattr__(self, "tests", tuple(self.tests))
         object.__setattr__(self, "diagnostics", tuple(self.diagnostics))
-        resolution_note = "Native elapsed_ns is zero; timer resolution limits this observation."
+        resolution_note = "Native elapsed_ns is zero. Timer resolution limits this observation."
         if self.elapsed_ns == 0 and resolution_note not in self.diagnostics:
             object.__setattr__(self, "diagnostics", self.diagnostics + (resolution_note,))
         if not isinstance(self.report_complete, bool):

@@ -240,7 +240,7 @@ def test_failed_import_stops_later_probes_but_cleans_confirmed_copy(selected, st
     assert item.outcome is outcome and item.version is None
     operation = next(item for item in report.operations if item.name == "tests.run_suite")
     assert operation.readiness is (Availability.MISSING_SETUP if status == "missing" else None)
-    # The failed tool comes first; the tools it stopped are tried after it.
+    # The failed tool comes first, and the tools it stopped are tried after it.
     assert ("pip install pytest==" if status == "missing" else 'import pytest') in item.action
     assert next(item for item in report.items if item.key == "coverage").action == (
         "fix pytest first, then run the tool check again")

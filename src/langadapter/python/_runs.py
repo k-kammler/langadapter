@@ -452,13 +452,13 @@ class _SuiteRunner:
                 raise InvalidRequest(
                     "suite.setup_files",
                     f"{self._relative(path)} lies on no test file's path "
-                    f"from the suite root; pytest would not load it")
+                    f"from the suite root. pytest would not load it")
         unlisted = sorted(loaded - listed)
         if unlisted:
             raise InvalidRequest(
                 "suite.setup_files",
                 f"pytest loads {', '.join(self._relative(p) for p in unlisted)}"
-                f" for the suite's test files; list it among the setup files")
+                f" for the suite's test files. List it among the setup files")
 
     def _check_observations(self) -> None:
         """A run as delivered runs without the instrument, so no setup file

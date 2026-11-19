@@ -168,7 +168,7 @@ def test_the_validity_policy_finds_what_observes_the_implementation(adapter):
 
 def test_set_accessible_is_allowed_and_flagged_for_review_only(adapter):
     """The rule the model reads allows reflection on the target's classes, so
-    opening a private member with setAccessible is no finding; the review
+    opening a private member with setAccessible is no finding. The review
     screen flags it, and its flag says it is allowed and only for review."""
     identity = adapter.target_identity("src/main/java/demo/Calc.java")
     source = (
@@ -184,7 +184,7 @@ def test_set_accessible_is_allowed_and_flagged_for_review_only(adapter):
     assert adapter.analyze_validity(source, identity).items == ()
     (flag,) = [f for f in adapter.screen_source(source, identity).items
                if f.rule_id == "reflective_access"]
-    assert flag.diagnostic == "opens a private member with setAccessible (allowed; review only)"
+    assert flag.diagnostic == "opens a private member with setAccessible (allowed, for review only)"
     allowed, forbidden = adapter.test_vocabulary()["validity_rule"].split("Forbidden:")
     assert "reflection on its classes" in allowed
     assert "reflection" not in forbidden and "setAccessible" not in forbidden

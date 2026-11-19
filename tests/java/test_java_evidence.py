@@ -19,7 +19,7 @@ def test_tests_configured_to_run_in_parallel_run_one_at_a_time(
     whatever the project configures: two tests that wait for each other
     fail in the normal run and in the per-test evidence alike. Run in
     parallel they passed, and the evidence reported their coverage as
-    inseparable; the listener's overlap check stays for an engine that
+    inseparable. The listener's overlap check stays for an engine that
     runs tests together."""
     from dataclasses import replace
     import os

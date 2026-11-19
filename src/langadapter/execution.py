@@ -547,8 +547,8 @@ def work_dir_tempdir(context: ProjectContext, executor: Executor,
             from langadapter._execution_scope import reraise_unresolved
             reraise_unresolved(exc)
             warnings.warn(
-                f"scratch directory retained: {directory}; ownership receipt: "
-                f"{owned.receipt}; {type(exc).__name__}: {exc}",
+                f"scratch directory retained: {directory}. Ownership receipt: "
+                f"{owned.receipt}. {type(exc).__name__}: {exc}",
                 RuntimeWarning, stacklevel=2)
 
     try:
@@ -565,8 +565,8 @@ def work_dir_tempdir(context: ProjectContext, executor: Executor,
         # Preserve the original interruption even when warnings are errors.
         with contextlib.suppress(Exception):
             warnings.warn(
-                f"scratch directory retained after interrupted operation: {directory}; "
-                f"ownership receipt: {owned.receipt}; {type(exc).__name__}: {exc}",
+                f"scratch directory retained after interrupted operation: {directory}. "
+                f"Ownership receipt: {owned.receipt}. {type(exc).__name__}: {exc}",
                 RuntimeWarning, stacklevel=2)
         raise
     else:
@@ -574,8 +574,8 @@ def work_dir_tempdir(context: ProjectContext, executor: Executor,
         if directory.retention_reason and not _process_tree.cancelled():
             with contextlib.suppress(Exception):
                 warnings.warn(
-                    f"scratch directory retained after interrupted operation: {directory}; "
-                    f"ownership receipt: {owned.receipt}; {directory.retention_reason}",
+                    f"scratch directory retained after interrupted operation: {directory}. "
+                    f"Ownership receipt: {owned.receipt}. {directory.retention_reason}",
                     RuntimeWarning, stacklevel=2)
             return
         remove()

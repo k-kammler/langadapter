@@ -157,7 +157,7 @@ def test_two_normal_runs_start_in_the_root_without_what_the_first_left(tmp_path)
 def test_each_mutant_run_starts_in_the_root_without_what_earlier_runs_left(tmp_path, options):
     """The origin check and every mutant run in the root as the normal run
     does (the clone's for a worker), first without the files earlier runs
-    created there, with an empty temporary directory of their own; the session
+    created there, with an empty temporary directory of their own. The session
     leaves the prepared copy as it found it."""
     prepared = _prepared(tmp_path)
     with prepared.use() as context:

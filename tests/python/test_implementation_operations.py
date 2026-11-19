@@ -149,7 +149,7 @@ def test_the_killers_are_the_records_failed_then_erroneous_tests():
         "test_x.py::TestC::test_m[x - y]")
     assert record_killers({"failed": [], "errors": []}) == ()
     assert record_killers(None) == ()
-    # The summary's report characters order the groups (-ra: "Ef"); where
+    # The summary's report characters order the groups (-ra: "Ef"). Where
     # they list neither (-rN), failures come first.
     ordered = {"failed": ["a.py::t_fail"], "errors": ["a.py::t_error"]}
     assert record_killers({**ordered, "order": "Ef"}) == ("a.py::t_error", "a.py::t_fail")
@@ -173,8 +173,8 @@ def test_the_run_record_is_its_last_marked_line_and_text_names_none():
 
 def test_the_record_counts_are_the_quiet_summary_counts():
     """passed, failed and errors as pytest's summary counts them, and as
-    collected their sum less one per file pytest could not collect; all zero
-    without a record, and "reported" only with one."""
+    collected their sum less one per file pytest could not collect. All are
+    zero without a record, and "reported" appears only with one."""
     record = {"counts": {"passed": 3, "failed": 1, "error": 2, "skipped": 4, "xpassed": 1},
               "broken": ["test_b.py", "test_b.py"]}
     assert record_counts(record) == {"collected": 5, "passed": 3, "failed": 1, "errors": 2}

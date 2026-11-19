@@ -45,7 +45,7 @@ def admitted(environment, patterns, roots: Sequence[str], container: bool) -> Tu
             _environment_dir(_PATH_END.split(text[start:], 1)[0], roots) for start in starts}
         if None in named:
             raise InvalidRequest("environment",
-                                 f"{name} refers to the original project; configure the copied root explicitly")
+                                 f"{name} refers to the original project. Configure the copied root explicitly")
         for env_dir in sorted(named):
             _check(name, env_dir, roots)
             if env_dir not in env_dirs:

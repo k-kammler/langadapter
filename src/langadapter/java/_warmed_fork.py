@@ -214,7 +214,7 @@ def _mapped(context, prepared, built_root, target_context, target_root):
                in (normalized.casefold() if os.name == "nt"
                    and not isinstance(context.execution, ContainerExecution) else normalized)
                for root in original):
-            raise InvalidRequest("jvm_args", "a JVM setting refers to the build copy; use a project-relative setting")
+            raise InvalidRequest("jvm_args", "a JVM setting refers to the build copy. Use a project-relative setting")
     model = replace(project, root=target_context.root,
         main_sources=tuple(path(item, required=True) for item in project.main_sources),
         test_sources=tuple(path(item, required=True) for item in project.test_sources),

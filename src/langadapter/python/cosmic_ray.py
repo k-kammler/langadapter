@@ -163,7 +163,7 @@ def _refuse_unknown_set(field: str, name: str) -> None:
     """Refuse ``name`` in ``field`` unless it names an operator set."""
     if name not in operator_set_names():
         raise InvalidRequest(
-            field, f"unknown operator set {name!r}; known: {', '.join(operator_set_names())}")
+            field, f"unknown operator set {name!r}. Known: {', '.join(operator_set_names())}")
 
 
 def _match_test_context(context: str, test_ids: Set[str]) -> Optional[str]:

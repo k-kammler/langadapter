@@ -22,7 +22,7 @@ unless `LANGADAPTER_JAVA_TOOLS_OFFLINE` is set to 1, as
 ## Run a suite
 
 The examples are in the `examples` directory of the
-[repository](https://github.com/k-kammler/langadapter/tree/v0.1.0/examples). A pip installation also puts them in
+[repository](https://github.com/k-kammler/langadapter/tree/v0.1.1/examples). A pip installation also puts them in
 `share/doc/langadapter/examples` inside the environment, the directory that
 `python -c "import sys; print(sys.prefix)"` prints. Run the commands below
 from the directory that holds `examples`, or give the examples' full path.

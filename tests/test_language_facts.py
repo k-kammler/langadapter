@@ -101,7 +101,7 @@ def test_python_and_java_take_the_timeout_journal_by_the_default(tmp_path):
 
 def test_only_python_seeds_its_runs_as_delivered(tmp_path):
     """Python's run as delivered takes a session seed, so a consumer may
-    make it the normal run; Java's refuses one, and the base states no
+    make it the normal run. Java's refuses one, and the base states no
     seed."""
     assert LangAdapter.seeds_delivered_runs is False
     assert _adapter(PythonAdapter, tmp_path).seeds_delivered_runs is True
@@ -308,7 +308,7 @@ def test_declaring_javas_validity_version_loads_no_parser():
 
 def test_importing_the_python_adapter_loads_no_tree_sitter():
     """The Python adapter's source operations are its base class, imported
-    with it; tree-sitter loads at the first parse, not before."""
+    with it, and tree-sitter loads at the first parse, not before."""
     import subprocess
     import sys
 

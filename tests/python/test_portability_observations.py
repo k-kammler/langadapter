@@ -455,7 +455,7 @@ def _request(suite, **fields):
 
 def test_a_carried_instrument_records_the_leaks_itself(tmp_path, carry_instrument):
     """A suite that carries the instrument records the leaks with it, and
-    only on request; the run writes nothing beside the suite."""
+    only on request. The run writes nothing beside the suite."""
     adapter, root, suite = _public(tmp_path, {"test_leaks.py": LEAKS})
     carry_instrument(root / "tests")
     suite = lb.Suite(suite.root, suite.test_files, ("conftest.py",))

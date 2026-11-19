@@ -565,7 +565,7 @@ def _discovered_interpreter(root: str, environment: Mapping[str, str]) -> str:
             "found (looked at: " + (", ".join(found.candidates) or "no address") + "): select "
             "one, or set python_version")
     raise InvalidRequest("python_executable", "several interpreters could run the project ("
-                         + "; ".join(found.existing) + "): select one")
+                         + ", ".join(found.existing) + "): select one")
 
 
 def _callers_own_environment(interpreter: str, root: str) -> bool:

@@ -52,7 +52,7 @@ register(_PythonAdapter.language, _PythonAdapter.file_extensions, _PythonAdapter
 register(_JavaAdapter.language, _JavaAdapter.file_extensions, _JavaAdapter)
 register(_CAdapter.language, _CAdapter.file_extensions, _CAdapter)
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 __all__ = [
     "__version__", "Availability", "LangAdapter", "BranchItem", "CancelScope", "Capability",

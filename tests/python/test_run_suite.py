@@ -1055,7 +1055,7 @@ def _container(adapter, root, zone):
     return container, executor
 
 
-@pytest.mark.skipif(os.name == "nt", reason="a container's paths are POSIX; "
+@pytest.mark.skipif(os.name == "nt", reason="a container's paths are POSIX, and "
                     "this machine stands in for one only where its paths are")
 def test_a_container_context_runs_through_its_executor(tmp_path):
     """The run, its target's check and its identity go through the

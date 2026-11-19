@@ -53,7 +53,7 @@ class Suite:
                 resolved = self._resolve(path)
                 if resolved.is_dir():
                     raise InvalidRequest(
-                        kind, f"{path} is a directory; name its files")
+                        kind, f"{path} is a directory. Name its files")
                 if not resolved.is_file():
                     raise InvalidRequest(kind, f"no file at {path}")
                 try:

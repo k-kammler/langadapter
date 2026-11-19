@@ -280,7 +280,7 @@ def test_native_specific_settings_type_is_refused_before_engine_open(setup):
 
 @pytest.mark.parametrize("handle,reason", [
     (dict(open_error=RuntimeError("entry failed")), "the worker fleet did not start: entry failed"),
-    (dict(workers=1), "1 of 2 workers started; the session does not allow fewer"),
+    (dict(workers=1), "1 of 2 workers started. The session does not allow fewer"),
 ])
 def test_a_failed_opening_leaves_no_open_session_in_its_scope(setup, tmp_path, handle, reason):
     """A session whose fleet did not start, or started fewer workers than it

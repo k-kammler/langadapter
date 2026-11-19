@@ -3219,9 +3219,9 @@ class CosmicRayEngineSession:
 
     def _open(self) -> "CosmicRayEngineSession":
         if self._closed:
-            raise RuntimeError("A closed mutation session cannot be reopened; create a new session")
+            raise RuntimeError("A closed mutation session cannot be reopened. Create a new session")
         if getattr(self.engine, "_retained_session", None) is not None:
-            raise RuntimeError("Mutation engine has an unclosed failed session; close its retained handle first")
+            raise RuntimeError("Mutation engine has an unclosed failed session. Close its retained handle first")
         log_fn = self.engine.config["log_fn"]
         # Built once, for every run of the session.
         self.env = self.engine._build_env(self.project_root)
@@ -3414,7 +3414,7 @@ class CosmicRayEngineSession:
                 "Use 'with engine.session(...) as sess: sess.run(...)'."
             )
         if self._run_failure is not None or self._target_commands or self._source_backup is not None:
-            raise RuntimeError("Mutation session has retained failed-run state; open a new session")
+            raise RuntimeError("Mutation session has retained failed-run state. Open a new session")
         try:
             result = self.engine._run_in_session(
                 sess=self, target=target, test_dir=test_dir,
@@ -3513,7 +3513,7 @@ class MutationSession(CommonMutationSession):
                 self._reason = detail
             else:
                 self.close()
-                self._opening_failed(f"{detail}; the session does not allow fewer",
+                self._opening_failed(f"{detail}. The session does not allow fewer",
                                      self.workers_started)
 
     def release(self) -> None:
@@ -3544,7 +3544,7 @@ class MutationSession(CommonMutationSession):
         if workers > self.workers_started:
             raise InvalidRequest(
                 "workers", f"the session has {self.workers_started} "
-                f"worker(s); a run can use them or run sequentially")
+                f"worker(s). A run can use them or run sequentially")
         operators = self._operators(request.catalogue)
         # An unreadable registry (None) refuses the run when its filter is
         # written (``_compute_excluded_operators``).
@@ -3792,7 +3792,7 @@ class MutationSession(CommonMutationSession):
         if shared:
             raise InvalidRequest(
                 "suite.test_files", f"test files share a name "
-                f"({', '.join(shared)}); pytest cannot run them in one "
+                f"({', '.join(shared)}). pytest cannot run them in one "
                 f"session without packages")
         return names
 

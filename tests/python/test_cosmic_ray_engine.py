@@ -571,7 +571,7 @@ def test_poll_session_progress_emits_breakdown(tmp_path: Path) -> None:
 def test_poll_session_progress_reports_counts_and_survives_a_failing_callback(
         tmp_path: Path) -> None:
     """The progress callback receives the run's finished and total mutants
-    each tick, without those the operator filter skipped; a callback that
+    each tick, without those the operator filter skipped. A callback that
     raises stops neither the poller nor its log line."""
     import threading
     import time as _t
@@ -1155,7 +1155,7 @@ def test_persist_cache_refuses_corrupt_session(tmp_path: Path) -> None:
         bad_session, cache_path, log_fn=lambda m, level=0: logs.append(m),
     )
     assert not cache_path.exists(), (
-        "cache file was persisted from a corrupt source; future runs "
+        "cache file was persisted from a corrupt source, so future runs "
         "will keep hitting the same failure"
     )
     assert any("REFUSED to cache" in m for m in logs)
@@ -1367,7 +1367,7 @@ def test_sync_test_dir_to_clones_propagates_edits_to_every_clone(
     for c in clones:
         synced = (c / "tests" / "test_a.py").read_bytes()
         assert synced == expected, (
-            f"clone {c} test file not synced to live bytes; "
+            f"clone {c} test file not synced to live bytes, so "
             f"workers will test against stale tests"
         )
 
@@ -1439,11 +1439,11 @@ def test_sync_test_dir_to_clones_propagates_both_coverage_and_mutation_files(
         cov_bytes = (c / "tests" / "test_thing.py").read_bytes()
         mut_bytes = (c / "tests" / "test_thing_mutation.py").read_bytes()
         assert cov_bytes == expected_cov, (
-            f"clone {c} coverage file out of sync; workers will see a "
+            f"clone {c} coverage file out of sync, so workers will see a "
             f"stale coverage suite"
         )
         assert mut_bytes == expected_mut, (
-            f"clone {c} mutation file out of sync; workers will see a "
+            f"clone {c} mutation file out of sync, so workers will see a "
             f"stale mutation suite and kill counts will not change "
             f"between measure_mutation calls"
         )
@@ -2099,7 +2099,7 @@ def test_container_command_keeps_each_path_one_argument(monkeypatch, tmp_path) -
 
 def test_container_run_without_a_session_ends_cleanly(monkeypatch, tmp_path) -> None:
     """A launcher that leaves no session (init failed) ends the run, not
-    truncated and without a crash; there is no session to read."""
+    truncated and without a crash. There is no session to read."""
     wz = _work_dir(tmp_path)
     engine_config = {
         "engine": "cosmic_ray",

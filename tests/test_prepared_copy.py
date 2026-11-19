@@ -150,7 +150,7 @@ def test_failed_preparation_retains_external_receipts(tmp_path, monkeypatch):
         raise OSError("copy refused")
 
     monkeypatch.setattr("langadapter._prepared_copy._copy_tree", failed)
-    with pytest.raises(WorkspacePreparationFailed, match="retained roots"):
+    with pytest.raises(WorkspacePreparationFailed, match="Retained roots"):
         PreparedCopy.create(str(source), parent=str(tmp_path),
                                 receipt_parent=str(receipts))
     records = list(receipts.glob("*.json"))
@@ -309,7 +309,7 @@ def test_real_docker_prepared_copy_copies_and_restores_selected_container_inputs
     zone = os.environ.get("LANGADAPTER_TEST_CONTAINER_WORK_DIR")
     if not (container and zone):
         pytest.skip("needs an explicit prepared container and mounted host work directory")
-    # The external source remains in the declared mount; its project copy and
+    # The external source remains in the declared mount. Its project copy and
     # durable result are separate siblings and are never cleanup candidates.
     source = Path(tempfile.mkdtemp(prefix="source-", dir=zone))
     (source / "input.txt").write_text("container input", encoding="ascii")

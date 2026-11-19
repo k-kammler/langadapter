@@ -362,7 +362,7 @@ def _collision_answer(parser: str, failures: Sequence[Tuple[int, str]],
     if failures:
         return SourceObservation(
             SourceStatus.INFRASTRUCTURE_FAILURE, parser=parser,
-            reason="; ".join(f"source {index}: {detail}" for index, detail in failures))
+            reason=". ".join(f"source {index}: {detail}" for index, detail in failures))
     reasons = dict(sorted(rejected))
     return SourceObservation(SourceStatus.COMPLETED, parser=parser, value=CollisionResolution(
         ejected=tuple(reasons), eject_reasons=tuple(reasons.values()),

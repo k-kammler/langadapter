@@ -308,7 +308,7 @@ _NATIVE = os.name == "nt" and os.environ.get("LANGADAPTER_TEST_WINDOWS_JOB") == 
 @pytest.mark.skipif(not _NATIVE, reason="opt-in Windows command-job gate")
 @pytest.mark.parametrize("parent_exits", [True, False], ids=["parent-exit", "interruption"])
 def test_real_windows_job_stops_its_owned_child(tmp_path, parent_exits):
-    """Use only this job's handles; never enumerate or stop other processes."""
+    """Use only this job's handles, and never enumerate or stop other processes."""
     marker = tmp_path / "child.pid"
     child = (
         "import os, pathlib, sys, time; "

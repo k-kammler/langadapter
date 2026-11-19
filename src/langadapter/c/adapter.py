@@ -87,7 +87,12 @@ _SETTING_VARIABLES = (("c_tests", "LANGADAPTER_C_TESTS"),
 _ADDRESS_SPACE_FORMAT = ("The value must be a number of bytes, with K, M or G for powers "
                          "of 1024, such as 2G.")
 #: Why nothing runs on a system other than Linux.
-_LINUX_ONLY = "the C adapter runs on Linux only in this version"
+def _linux_only() -> str:
+    """Why the C adapter runs nothing on this system, naming WSL on Windows."""
+    return ("the C adapter runs on Linux only in this version"
+            + (", on Windows in WSL" if sys.platform == "win32" else ""))
+
+
 #: The modules of LangAdapter's extra for C (``langadapter[c]``), each with
 #: its distribution's name.
 _EXTRA_MODULES = {"tree_sitter_c": "tree-sitter-c", "gcovr": "gcovr",
@@ -630,7 +635,7 @@ class CAdapter(la.LangAdapter):
         """The context's toolchain, probed once, or the problem."""
         with self._lock:
             if self._toolchain_found is None and not sys.platform.startswith("linux"):
-                self._toolchain_found = _toolchain.ToolchainProblem(_LINUX_ONLY)
+                self._toolchain_found = _toolchain.ToolchainProblem(_linux_only())
             elif self._toolchain_found is None:
                 if self._extension_mode:
                     compiler = _toolchain.find_compiler(self._setting("c_compiler"),
@@ -661,7 +666,7 @@ class CAdapter(la.LangAdapter):
         PATH, which a suite run and a run as delivered start each test
         program under, or ""."""
         if not sys.platform.startswith("linux"):
-            return _LINUX_ONLY
+            return _linux_only()
         missing = [name for module, name in _EXTRA_MODULES.items()
                    if importlib.util.find_spec(module) is None]
         if missing:
@@ -677,6 +682,25 @@ class CAdapter(la.LangAdapter):
             return ("a suite run or a run as delivered of C tests needs stdbuf (coreutils) on "
                     "PATH, which keeps their output line-buffered")
         return ""
+
+    def inspect_project(self, request):
+        """The compiler and its gcov, started for their versions, and the
+        extra's modules, stdbuf, prlimit and Mull found (``_setup``). Off Linux
+        the system's refusal."""
+        from langadapter.c._setup import assess
+        return assess(self, request, "inspection")
+
+    def verify_project(self, request):
+        """The inspection's items with each tool it found started once
+        (``_setup``)."""
+        from langadapter.c._setup import assess
+        return assess(self, request, "verification")
+
+    def _runtime_missing(self) -> bool:
+        """Whether the context names no compiler, read only on Linux: on another
+        system the refusal of the system (``execution_setup_issue``) comes
+        first in every report, not the missing runtime."""
+        return sys.platform.startswith("linux") and super()._runtime_missing()
 
     def _address_space_limit(self) -> Optional[int]:
         """The bytes of address space each test process may reserve, or None
@@ -1071,8 +1095,8 @@ class CAdapter(la.LangAdapter):
         if self._extension_mode:
             return self._python().delivered_order_refusal(reverse)
         if reverse:
-            return ("a C test program runs its tests in its own order; a reverse-order run is "
-                    "not offered for C tests")
+            return ("a C test program runs its tests in its own order, so a reverse-order run "
+                    "is not offered for C tests")
         return None
 
     def _refusal(self, request) -> Optional[Tuple[la.Outcome, str]]:
@@ -1975,7 +1999,7 @@ class CAdapter(la.LangAdapter):
         if len(names[2]) != len(names[0]) + len(names[1]) or len(set(names[2])) != len(names[2]):
             return SourceResult(REFUSED, first, _syntax.PARSER,
                                 detail="the merge would lose a test or name two tests alike")
-        detail = "; ".join(part for part in (
+        detail = " and ".join(part for part in (
             "renamed " + ", ".join(f"{old} -> {new}" for old, new in merged.renamed)
             if merged.renamed else "",
             "shared " + ", ".join(merged.shared) if merged.shared else "") if part)

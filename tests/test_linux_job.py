@@ -1,4 +1,4 @@
-"""Linux child accounting; native execution is opt-in and supervisor-only."""
+"""Linux child accounting. Native execution is opt-in and supervisor-only."""
 import ctypes
 import io
 import os

@@ -136,7 +136,7 @@ def test_a_project_python_newer_than_the_librarys_gets_a_note(program, monkeypat
     _, runtime = _check(context)
     assert runtime.reason == (
         f"{TODAY}. LangAdapter runs on Python 3.10 and reads this project's Python 3.12 sources "
-        "with its own parser; a source using newer syntax is reported as unreadable")
+        "with its own parser. A source using newer syntax is reported as unreadable")
 
 
 def test_every_operation_refuses_an_unsupported_python_before_anything_starts(tmp_path, monkeypatch):

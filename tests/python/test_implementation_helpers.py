@@ -170,7 +170,7 @@ def test_the_shield_plugin_binds_the_real_builtins_into_coverage_only(
     exec(compile(_EVICTION_SHIELD_PLUGIN, "shield", "exec"), namespace)
     measured.len = "defined by the module itself"
     real_divmod = builtins.divmod
-    # Replaced after the plugin was loaded, as a test does; restored at once.
+    # Replaced after the plugin was loaded, as a test does, and restored at once.
     builtins.divmod = lambda *args: "replaced"
     try:
         namespace["pytest_configure"](None)

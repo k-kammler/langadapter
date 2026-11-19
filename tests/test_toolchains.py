@@ -250,7 +250,8 @@ def test_a_download_with_another_checksum_stops_the_part_before_unpacking(
 @pytest.mark.parametrize("language", ["python", "java", "c"])
 def test_a_part_refuses_another_architecture_before_anything(tmp_path, language):
     """A built-in part installs x86_64 tools, so on another machine it stops
-    with the guide's address before it makes or fetches anything."""
+    with the guide's address before it makes or fetches anything. The
+    refusal names the command, not the part's file."""
     import subprocess
 
     into = tmp_path / "tools"
@@ -259,15 +260,18 @@ def test_a_part_refuses_another_architecture_before_anything(tmp_path, language)
                           capture_output=True, text=True,
                           env=_stand_ins(tmp_path, uname="#!/bin/sh\necho aarch64\n"))
     assert done.returncode == 2
-    assert "installs x86_64 tools, and this machine is aarch64" in done.stderr
+    assert (f"langadapter toolchains {language} installs x86_64 tools, and this machine is "
+            "aarch64") in done.stderr
+    assert "ubuntu-24.04.sh" not in done.stderr
     assert toolchains._GUIDE in done.stderr and not into.exists()
 
 
 @needs_sh
 def test_the_c_part_run_as_a_user_names_the_missing_system_packages(tmp_path):
     """Run as a user without GCC 13, the C part stops with the exact
-    apt-get line before it makes or fetches anything, and never calls
-    apt-get itself."""
+    apt-get lines, the package lists updated first, before it makes or
+    fetches anything, and never calls apt-get itself. The refusal names the
+    command, not the part's file."""
     import subprocess
 
     into = tmp_path / "tools"
@@ -277,7 +281,8 @@ def test_the_c_part_run_as_a_user_names_the_missing_system_packages(tmp_path):
     done = subprocess.run(["sh", str(part), into.as_posix(), sys.executable, ""],
                           capture_output=True, text=True, env=dict(env, MISSING="gcc-13"))
     assert done.returncode == 1
-    assert done.stderr.splitlines()[-1] == "sudo apt-get install gcc-13"
+    assert done.stderr.splitlines()[-1] == "sudo apt-get update && sudo apt-get install gcc-13"
+    assert done.stderr.startswith("langadapter toolchains c needs system packages")
     assert "apt-get ran" not in done.stderr and not into.exists()
 
 

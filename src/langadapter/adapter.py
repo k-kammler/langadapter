@@ -809,19 +809,19 @@ class LangAdapter:
         ``capabilities`` probe reports unsupported, and the readiness of a pure
         read stays unknown until it is tried."""
         operations = self.operation_capabilities()
-        interpreter = self.context.interpreter
-        if interpreter is None or interpreter.path is None:
+        if self._runtime_missing():
             return CapabilityReport(self.language, "", Outcome.MISSING_SETUP,
                                     "no project runtime is available", self.context.runtime_version,
                                     (), (), "none", (), operations=operations)
+        path = getattr(self.context.interpreter, "path", None) or ""
         runner_issue = self._container_runner_issue()
         if runner_issue:
-            return CapabilityReport(self.language, interpreter.path, Outcome.MISSING_SETUP,
+            return CapabilityReport(self.language, path, Outcome.MISSING_SETUP,
                                     runner_issue, self.context.runtime_version,
                                     (), (), "none", (), operations=operations)
         probe = getattr(self, "capabilities", None)
         if not callable(probe):
-            return CapabilityReport(self.language, interpreter.path, Outcome.UNSUPPORTED,
+            return CapabilityReport(self.language, path, Outcome.UNSUPPORTED,
                                     "readiness probing is not implemented", self.context.runtime_version,
                                     (), (), "none", (), operations=operations)
         report = probe()
@@ -905,7 +905,7 @@ class LangAdapter:
         for status in (Availability.UNSUPPORTED, Availability.MISSING_SETUP):
             failures = [item for item in checks if item is not None and item.availability is status]
             if failures:
-                return Capability(name, status, "; ".join(item.reason or item.name for item in failures))
+                return Capability(name, status, ". ".join(item.reason or item.name for item in failures))
         if checks and all(item is not None and item.available for item in checks):
             return Capability(name, Availability.AVAILABLE)
         return None

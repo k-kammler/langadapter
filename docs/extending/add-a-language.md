@@ -3191,7 +3191,11 @@ cannot run. It ends with
 status 1 when a consumer you named is not ready or cannot be read, for example
 because it is not installed, also when the report lists a problem: an
 installed consumer's profile that cannot be read, or an adapter that cannot be
-made, and with `--example` when a hook the example ran reads failing.
+made, and with `--example` when a hook the example ran reads failing. It
+ends with status 1 too when your adapter's `execution_setup_issue` names
+why its operations do not run on this system: a line after the language's
+says so, such as "This system: the C adapter runs on Linux only in this
+version.", and no consumer reads ready.
 Otherwise it ends with status 0, also when only a run on an example
 can confirm a hook, and
 without `--for` even when hooks are missing.

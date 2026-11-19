@@ -194,7 +194,7 @@ def test_a_lock_another_provisioning_holds_makes_this_one_wait_and_stop(monkeypa
     lock = store / f".{environment.name}.lock"
     lock.mkdir()
     recorded.clear()
-    with pytest.raises(RuntimeError, match=r"timed out waiting .* remove the stale lock .*"
+    with pytest.raises(RuntimeError, match=r"timed out waiting .* Remove the stale lock .*"
                                            + re.escape(lock.name)):
         _provision.provision("3.10", None, store=store, name="demo")
     assert recorded == [] and lock.exists() and Path(python).exists()

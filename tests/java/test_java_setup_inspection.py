@@ -63,7 +63,7 @@ def test_public_metadata_protects_descriptors_without_claiming_ready(selected):
     assert items["build_descriptor"].readiness is None
     assert all(item.readiness is not lb.Availability.AVAILABLE for item in report.operations)
     assert "private" not in repr(report.safe_export())
-    # The build is first tried by a run; the operations by the verification check.
+    # The build is first tried by a run, the operations by the verification check.
     assert items["build_descriptor"].action == "start a run, which tries it for the first time"
     assert not _without_action(report, request.required_operations)
 
@@ -238,7 +238,7 @@ def test_ambiguous_build_selection_is_explicit_and_does_not_pick_a_tool(selected
     assert item.ambiguous and item.candidates == ("maven", "gradle") and item.selected is None
     assert item.required is required and item.action.startswith("remove the build files")
     assert (report.context is None) is required
-    # A build waits for the choice in both scopes; nothing tries it before.
+    # A build waits for the choice in both scopes. Nothing tries it before.
     for scope in (lb.inspect_project, lb.verify_project):
         status = next(entry for entry in scope("java", replace(request, required_operations=(operation,))).operations
                       if entry.name == operation)
@@ -319,7 +319,7 @@ def test_runtime_metadata_never_swallows_unresolved_owner(selected, monkeypatch,
 def test_unselected_runtime_is_unattempted_and_not_provisioned(selected, runtime):
     request, _ = selected
     report = lb.inspect_project("java", replace(request, context=replace(request.context, interpreter=runtime)))
-    # No JDK is missing setup, as for Python; a provisioning request is not provisioned.
+    # No JDK is missing setup, as for Python. A provisioning request is not provisioned.
     expected = lb.Outcome.MISSING_SETUP if runtime is None else None
     assert report.outcome is (expected or lb.Outcome.UNSUPPORTED) and report.context is None
     assert report.items[0].outcome is expected and report.items[0].version is None

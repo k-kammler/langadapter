@@ -112,7 +112,7 @@ def test_the_capability_report_probes_the_container(instance):
 
 def test_the_public_operations_run_in_the_container(instance, tmp_path, carry_instrument):
     """Public suite runs, per-test evidence and benchmarks run in the
-    container, with the suite in the work directory; a copy that carries the
+    container, with the suite in the work directory. A copy that carries the
     determinism instrument seeds its tests."""
     _name, _python, zone = instance
     root = zone / "pproj"

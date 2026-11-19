@@ -150,7 +150,7 @@ pythonpath = ["src"]
 addopts = "--strict-markers --strict-config"
 filterwarnings = ["error"]
 markers = [
-    "mutation_tool: starts a real mutation tool (Cosmic Ray or PIT); the suite split runs these apart",
+    "mutation_tool: starts a real mutation tool (Cosmic Ray or PIT). The suite split runs these apart",
 ]
 
 [tool.ruff]

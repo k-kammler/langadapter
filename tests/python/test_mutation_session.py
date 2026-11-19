@@ -193,7 +193,7 @@ def test_a_session_on_a_new_adapter_runs_with_the_projects_own_pytest_configurat
 
 @pytest.mark.mutation_tool
 def test_a_local_context_with_a_work_dir_reads_its_own_session(tmp_path):
-    """A local run keeps its session in the engine's own directory; the work
+    """A local run keeps its session in the engine's own directory. The work
     directory's session path is a container run's."""
     _, root, suite = _project(tmp_path, ("test_strong.py", STRONG))
     zone = tmp_path / "zone"
@@ -286,7 +286,7 @@ def test_a_consumers_timeout_rule_is_recorded_as_requested(tmp_path):
     assert run.identity.per_mutant_timeout_s == 30
     assert run.identity.operators == tuple(ADD_SUB)
     (mutant,) = run.mutants
-    # pytest prints the file relative to the run's scratch directory; the
+    # pytest prints the file relative to the run's scratch directory, and the
     # run identifies the test within the suite.
     assert [str(test) for test in mutant.killing_tests] == [
         "test_strong.py::test_strong"]
@@ -649,7 +649,7 @@ def test_a_request_can_turn_the_journal_off(tmp_path):
 
 
 def test_a_suite_carrying_the_instrument_takes_no_plugin(tmp_path, carry_instrument):
-    """The instrument's hooks write the journal; the plugin beside them
+    """The instrument's hooks write the journal. The plugin beside them
     would write every line twice. A setup file counts whether the request
     lists it or pytest loads it for the test files."""
     adapter, root, suite = _project(tmp_path, ("test_strong.py", STRONG))

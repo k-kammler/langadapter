@@ -15,7 +15,8 @@ adapters' modules, which the Python, Java and C pages render. `langadapter.tutor
 hold the Toy language that `langadapter tutorial` writes out and explains step
 by step.
 [Tested environments](tested-environments.md) lists the platforms, Python
-versions and language tools this release was tested with.
+versions and language tools LangAdapter was tested with, each with the
+release of its test.
 
 | Page | Modules |
 | --- | --- |

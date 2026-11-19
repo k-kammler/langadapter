@@ -65,7 +65,7 @@ def test_the_default_operators_give_mulls_own_default_group(project, adapter, su
     Mull's own cxx_default group gives on the same target and tests."""
     root = project("calc_make")
     default = _run(adapter(root), suite(CLAMP_TESTS))
-    # The group's name is no operator the adapter offers; Mull expands it.
+    # The group's name is no operator the adapter offers. Mull expands it.
     monkeypatch.setattr(_mull, "ALL", _mull.ALL + ("cxx_default",))
     group = _run(adapter(root), suite(CLAMP_TESTS),
                  catalogue=Catalogue(operators=("cxx_default",)))

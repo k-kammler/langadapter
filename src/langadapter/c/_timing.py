@@ -25,16 +25,16 @@ from langadapter.c import _ctest, _programs, _utest
 
 #: What a repetition's time covers for C tests.
 INCLUDES = ("each test program's process on this machine from start to exit, one after "
-            "another: program start and all its tests; the target and the tests are "
+            "another: program start and all its tests. The target and the tests are "
             "built before the repetitions")
 #: What a repetition's time covers for ctest's tests.
 CTEST_INCLUDES = ("each test ctest lists, in a process of its own on this machine, one after "
                   "another, with its arguments, working folder and environment: program "
-                  "start and the test; the target is built and the tests' programs relinked "
+                  "start and the test. The target is built and the tests' programs relinked "
                   "before the repetitions, and a test a suite run does not run is not run")
 #: What a repetition's time covers for Python tests of an extension.
 EXTENSION_INCLUDES = ("the runner's process on this machine: interpreter start, the "
-                      "extension's load, collection and the tests; the extension is built "
+                      "extension's load, collection and the tests. The extension is built "
                       "before the repetitions")
 #: What a repetition's time covers in a container, by what it covers on
 #: this machine: the same processes in the container, each with the

@@ -165,7 +165,7 @@ def test_the_counters_lizard_counts_name_its_version_in_their_definition(adapter
 
 def test_an_adapter_that_counts_its_own_metrics_keeps_the_tree_sitter_tags():
     """Only an adapter whose counts are lizard's (Python's and Java's declare
-    ``_lizard_metrics``) has lizard's tags; another adapter's own counts
+    ``_lizard_metrics``) has lizard's tags. Another adapter's own counts
     keep the tags they had."""
     from langadapter.sources import _StructuralProvider
 

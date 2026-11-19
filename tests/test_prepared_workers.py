@@ -489,7 +489,7 @@ def test_inflight_handle_survives_revocation_before_parent_token_is_reset(monkey
 
 def test_a_callers_error_in_a_worker_leaves_the_owner_usable(prepared, monkeypatch):
     """A caller's own error inside a worker leaves the prepared owner
-    untagged, so the next borrow goes ahead; a borrow whose own cleanup
+    untagged, so the next borrow goes ahead. A borrow whose own cleanup
     fails still marks it."""
     with prepared.use() as context:
         def refused_then_measured():

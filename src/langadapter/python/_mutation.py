@@ -243,8 +243,8 @@ class SourceBackup:
     def retain(self, error: BaseException) -> None:
         error._langadapter_source_backup = self.owner
         if hasattr(error, "add_note"):
-            error.add_note(f"Original mutation source retained at {self.owner.root}; "
-                           f"creation receipt: {self.owner.receipt}")
+            error.add_note(f"Original mutation source retained at {self.owner.root}. "
+                           f"Creation receipt: {self.owner.receipt}")
 
     def remove(self) -> None:
         self.owner.remove()

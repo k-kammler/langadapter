@@ -149,7 +149,7 @@ DERIVATION_ASSUMPTION = (
     "kept test is one of its recorded killing tests, when it is invalid, "
     "when it was killed without a named test, or, for a timeout or a kill "
     "whose run did not record every killing test, when the kept tests cover "
-    "its line or its line is unknown; otherwise it counts "
+    "its line or its line is unknown. Otherwise it counts "
     "as survived. This "
     "equals a fresh measurement of the kept tests only when each kept "
     "test's verdict does not depend on the removed tests and every killing "
@@ -326,7 +326,7 @@ def _require_engine(engine: str, offered: str, language: str) -> None:
     """Refuse a mutation engine other than ``offered``, the one the
     ``language`` adapter offers."""
     if engine != offered:
-        raise InvalidRequest("engine", f"unknown mutation engine {engine!r}; the {language} "
+        raise InvalidRequest("engine", f"unknown mutation engine {engine!r}. The {language} "
                              f"adapter offers {offered}")
 
 
@@ -1315,7 +1315,7 @@ class MutationRun:
         a run without a suite)."""
         if self.derivation is not None:
             raise InvalidRequest(
-                "run", "is derived; derive from the measured run")
+                "run", "is derived. Derive from the measured run")
         kept_tests = frozenset(kept)
         if self.identity is not None:
             files = {f.path for f in self.identity.observation.suite}
@@ -1331,7 +1331,7 @@ class MutationRun:
                     "run", f"mutant {mutant.engine_id} "
                     f"({mutant.key.operator} at line {mutant.key.line}) was "
                     f"killed by {', '.join(mutant.killers)}, which the run "
-                    f"did not place among its suite's tests; a derivation "
+                    f"did not place among its suite's tests. A derivation "
                     f"cannot decide it: measure the kept tests instead")
         lines = frozenset(covered_lines)
         kept_ids = {mutant.row.get("id") for mutant in self.mutants

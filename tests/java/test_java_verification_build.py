@@ -5,6 +5,7 @@ run, reports a descriptor error, and with real tools compiles and discovers
 the tests and starts the measurement tools."""
 from dataclasses import replace
 import hashlib
+import io
 import os
 import subprocess
 from pathlib import Path
@@ -26,6 +27,9 @@ DESCRIPTOR = (
     "[FATAL] Non-readable POM /project/pom.xml: no more data available\n"
     "[ERROR] The build could not read 1 project -> [Help 1]\n")
 UNMATCHED = "[ERROR] the repository manager refused the request while offline\n"
+#: The next step of a step that needs a download first.
+DOWNLOAD_STEP = ("a tool check that may download, or a run with network access, downloads "
+                 "what is missing once, before any offline run")
 # Gradle 9.8.0's output, offline, for a buildscript classpath not in its cache.
 BUILDSCRIPT = (
     "FAILURE: Build failed with an exception.\n\n* What went wrong:\n"
@@ -96,11 +100,22 @@ def test_verification_resolves_offline_unless_acquisition_is_allowed(controlled,
 
 def test_a_failure_only_a_download_fixes_is_left_to_the_first_run(controlled):
     """The plugin is missing from the local repository: the first run, which
-    may download it, tries the build, and the check passes as before."""
+    may download it, tries the build, and the check passes as before. The
+    build's items and the report say what the check left, and the next step
+    is a run with network access."""
     request, state = controlled
     report = lb.verify_project("java", request)
     resolution = _item(report, "build_resolution")
     assert resolution.tried_by == "run" and "maven-help-plugin" in resolution.reason
+    assert resolution.action == DOWNLOAD_STEP
+    for key in ("build_descriptor", "build_launcher"):
+        item = _item(report, key)
+        assert item.tried_by == "run"
+        assert item.reason == "found, and the check's build did not resolve the project"
+        assert item.action == resolution.action
+    assert report.reason == ("ran the JDK's version commands, tried in a project copy what it "
+                             "could without running a test, and left the other steps to the "
+                             "first run")
     assert report.outcome is lb.Outcome.COMPLETED
 
 
@@ -161,6 +176,8 @@ def test_a_descriptor_error_fails_verification(controlled):
     resolution = _item(report, "build_resolution")
     assert resolution.required and resolution.tried_by is None
     assert resolution.outcome is not lb.Outcome.COMPLETED and "Non-readable POM" in resolution.reason
+    for key in ("build_descriptor", "build_launcher"):
+        assert _item(report, key).action == "fix what the build reports, then run the tool check again"
     assert report.outcome is not lb.Outcome.COMPLETED
 
 
@@ -253,7 +270,79 @@ def test_a_tool_that_needs_a_download_first_is_left_to_the_first_run(controlled)
     jacoco = _item(report, "jacoco")
     assert state.agents == []
     assert jacoco.required and jacoco.tried_by == "run" and jacoco.outcome is None
+    assert jacoco.action == DOWNLOAD_STEP
     assert report.outcome is lb.Outcome.COMPLETED
+
+
+def _central(monkeypatch, answer):
+    """Maven Central as the tool cache reaches it: each fetch is recorded and
+    gets ``answer``, the bytes of a jar or an exception to raise."""
+    import urllib.request
+
+    fetched = []
+
+    def urlopen(url, timeout=None):
+        fetched.append(url)
+        if isinstance(answer, Exception):
+            raise answer
+        return io.BytesIO(answer)
+
+    monkeypatch.setattr(urllib.request, "urlopen", urlopen)
+    return fetched
+
+
+def test_a_check_that_may_download_fetches_and_starts_a_tool(controlled, monkeypatch):
+    """With acquisition allowed, the check downloads JaCoCo's jars into the
+    tool cache and starts the agent once, so no run has to."""
+    from langadapter.java import _jacoco
+
+    request, state = controlled
+    fetched = _central(monkeypatch, b"jar")
+    report = lb.verify_project("java", replace(_with_coverage(request, cached=False),
+                                               allow_acquisition=True))
+    jacoco = _item(report, "jacoco")
+    assert len(fetched) == 5 and len(state.agents) == 1
+    assert jacoco.outcome is lb.Outcome.COMPLETED and jacoco.tried_by is None
+    assert jacoco.reason == "started once on the selected JDK"
+    assert jacoco.selected == request.context.environment["LANGADAPTER_JAVA_TOOLS"]
+    assert jacoco.version == _jacoco.VERSION
+
+
+def test_a_download_the_check_could_not_make_reports_its_failure(controlled, monkeypatch):
+    """The check may download, and Maven Central does not answer: the item
+    reports the failed download, and nothing starts."""
+    import urllib.error
+
+    request, state = controlled
+    _central(monkeypatch, urllib.error.URLError("no route to host"))
+    report = lb.verify_project("java", replace(_with_coverage(request, cached=False),
+                                               allow_acquisition=True))
+    jacoco = _item(report, "jacoco")
+    assert state.agents == [] and jacoco.tried_by is None
+    assert jacoco.outcome is lb.Outcome.INFRASTRUCTURE_FAILURE
+    assert jacoco.reason.startswith("org.jacoco:")
+    assert "could not be fetched from Maven Central" in jacoco.reason
+    assert "no route to host" in jacoco.reason
+    assert jacoco.action == "fix what the tool cache reports, then run the tool check again"
+
+
+def test_downloads_turned_off_name_their_variable_even_when_the_check_may_download(
+        controlled, monkeypatch):
+    """LANGADAPTER_JAVA_TOOLS_OFFLINE keeps the check from downloading: the
+    item is missing setup, names the variable and fetches nothing."""
+    request, state = controlled
+    fetched = _central(monkeypatch, b"jar")
+    values = dict(request.context.environment, LANGADAPTER_JAVA_TOOLS_OFFLINE="1")
+    context = replace(request.context, environment=lb.Environment(values, inherit=False))
+    report = lb.verify_project("java", replace(_with_coverage(request, cached=False),
+                                               context=context, allow_acquisition=True))
+    jacoco = _item(report, "jacoco")
+    assert fetched == [] and state.agents == []
+    assert jacoco.outcome is lb.Outcome.MISSING_SETUP
+    assert jacoco.reason == ("5 of 5 tool jars are not downloaded, and "
+                             "LANGADAPTER_JAVA_TOOLS_OFFLINE turns downloads off")
+    assert jacoco.action == ("unset LANGADAPTER_JAVA_TOOLS_OFFLINE, or fill the tool cache "
+                             "(LANGADAPTER_JAVA_TOOLS) another way, then run the tool check again")
 
 
 def test_a_step_that_runs_out_of_time_is_left_to_the_first_run(controlled):
@@ -310,6 +399,7 @@ def test_a_launcher_not_downloaded_leaves_discovery_to_the_first_run(java_projec
     assert _item(report, "build_resolution").outcome is lb.Outcome.COMPLETED
     discovery = _item(report, "test_discovery")
     assert discovery.tried_by == "run" and "not downloaded yet" in discovery.reason
+    assert discovery.action == DOWNLOAD_STEP
     assert not any((tmp_path / "empty").iterdir())
     assert report.outcome is lb.Outcome.COMPLETED
 

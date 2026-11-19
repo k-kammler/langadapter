@@ -79,7 +79,7 @@ def flow(tmp_path, monkeypatch):
         execution=lb.ContainerExecution("selected", work_dir=str(zone), container_work_dir="/workzone",
                                         helper_python="/control/python"),
         environment={"JAVA_EXTRA": "selected", "PATH": "/selected/bin"}), executor=container)
-    # Mechanism-only fixture; public admission is tested separately.
+    # Mechanism-only fixture. Public admission is tested separately.
     monkeypatch.setattr(adapter, "_context_issue", lambda: "")
     monkeypatch.setattr(adapter, "_jdk", lambda: jdk._ContainerJdk("/selected/jdk", 21, "21.0.7"))
     monkeypatch.setattr(adapter, "project", lambda: Resolution(

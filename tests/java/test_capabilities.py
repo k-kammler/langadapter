@@ -140,7 +140,7 @@ def test_a_refused_operation_gives_the_context_s_issue(tmp_path):
     context = lb.ProjectContext(str(tmp_path), lb.Interpreter(path=sys.executable),
                                 test_framework=lb.TestFrameworkConfig("isolated"))
     adapter = lb.create("java", context)
-    issue = "Java test_framework overrides are not implemented; use the project's configuration"
+    issue = "Java test_framework overrides are not implemented. Use the project's configuration"
     assert {item.name: item.reason for item in adapter.operation_capabilities()}["tests.run_suite"] == issue
     run = adapter.tests.run_suite(SuiteRunRequest(lb.Suite(str(tmp_path), ("CalcTest.java",)), 60))
     assert (run.outcome, run.reason) == (lb.Outcome.UNSUPPORTED, issue)

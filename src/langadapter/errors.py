@@ -43,7 +43,7 @@ class UnsupportedLanguage(LangAdapterError, LookupError):
         self.registered: Tuple[str, ...] = tuple(sorted(registered))
         listed = ", ".join(self.registered) or "none"
         super().__init__(
-            f"no adapter is registered for {requested!r}; registered: {listed}")
+            f"no adapter is registered for {requested!r}. Registered: {listed}")
 
 
 class RegistrationConflict(LangAdapterError, ValueError):
@@ -54,7 +54,7 @@ class RegistrationConflict(LangAdapterError, ValueError):
         self.claimed = claimed
         self.holder = holder
         super().__init__(
-            f"{claimed!r} is registered by the {holder!r} adapter; register "
+            f"{claimed!r} is registered by the {holder!r} adapter. Register "
             f"with replace=True to replace it")
 
 

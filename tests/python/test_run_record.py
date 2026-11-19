@@ -108,7 +108,7 @@ def test_the_record_counts_and_names_the_killers_as_pytest_s_summary(tmp_path, n
     """The counts equal those pytest's quiet summary gives (a teardown
     error after a failure counts both, an xpass neither), and the killers
     are the tests its short summary names, whole and in its order, also
-    when the run starts outside the suite's directory; a test's own printed
+    when the run starts outside the suite's directory. A test's own printed
     summary text counts for nothing."""
     record, text = _run(tmp_path, {"test_outcomes.py": OUTCOMES}, nested=nested)
     assert record_counts(record) == pytest_counts(text) == {

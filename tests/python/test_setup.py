@@ -134,7 +134,7 @@ def test_setup_discovery_lists_only_the_test_paths_ancestors(tmp_path):
 def test_the_instrument_marker_divides_the_shim_from_the_instrument(tmp_path,
                                                                    carried_instrument):
     """What precedes the marker in the setup file of a suite delivered with
-    the instrument is the import shim, what follows it the instrument; a
+    the instrument is the import shim, what follows it the instrument. A
     prepared setup file has no marker."""
     suite = tmp_path / "project" / "tests"
     suite.mkdir(parents=True)

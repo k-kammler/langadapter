@@ -14,7 +14,7 @@ if [ "$#" -ne 3 ] || [ -z "$1" ] || [ -z "$2" ]; then
 fi
 case "$(uname -m)" in
     x86_64) ;;
-    *) echo "c.ubuntu-24.04.sh installs x86_64 tools, and this machine is $(uname -m). The guide lists the steps: https://k-kammler.github.io/langadapter/guide/toolchains/" >&2
+    *) echo "langadapter toolchains c installs x86_64 tools, and this machine is $(uname -m). The guide lists the steps: https://k-kammler.github.io/langadapter/guide/toolchains/" >&2
        exit 2 ;;
 esac
 
@@ -29,8 +29,8 @@ for package in $SYSTEM_PACKAGES; do
 done
 if [ -n "$missing" ]; then
     if [ "$(id -u)" -ne 0 ]; then
-        echo "c.ubuntu-24.04.sh needs system packages that are not installed. Install them, then run it again:" >&2
-        echo "sudo apt-get install$missing" >&2
+        echo "langadapter toolchains c needs system packages that are not installed. Install them, then run it again:" >&2
+        echo "sudo apt-get update && sudo apt-get install$missing" >&2
         exit 1
     fi
     DEBIAN_FRONTEND=noninteractive apt-get update

@@ -254,7 +254,7 @@ def test_delivered_journal_presence_accumulates_across_files(flow, monkeypatch):
      "the timeout of 10 s ended before OtherTest.java ran"),
 ])
 def test_delivered_timeout_bounds_the_whole_run(flow, monkeypatch, spent, given, outcome, reason):
-    """Each file runs in what is left of the request's timeout; a run whose
+    """Each file runs in what is left of the request's timeout, and a run whose
     time is spent ends timed out before the next file."""
     from langadapter.runs import RunCounts, SuiteRun
 

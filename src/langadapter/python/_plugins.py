@@ -1090,7 +1090,7 @@ _SEED = int(_SEED) if _SEED else None
 @_pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
     # hypothesis's pytest plugin reads its seed option in its own
-    # pytest_configure, after this one; a missing option is no plugin.
+    # pytest_configure, after this one. A missing option is no plugin.
     if (_SEED is not None
             and getattr(config.option, "hypothesis_seed", "") is None):
         config.option.hypothesis_seed = str(_SEED)

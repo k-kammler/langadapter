@@ -130,7 +130,7 @@ def test_a_seed_outside_python_s_hash_seed_range_is_refused(tmp_path, seed):
 ])
 def test_the_timeout_bounds_the_whole_run(tmp_path, monkeypatch, spent, given, outcome, reason):
     """Each file runs in what is left of the request's timeout, and its
-    timeout is reported as the run's; a run whose time is spent ends timed
+    timeout is reported as the run's. A run whose time is spent ends timed
     out before the next file. The run records the toolchain its file runs
     recorded."""
     from types import SimpleNamespace

@@ -202,7 +202,7 @@ class CalcSequentialTest {
 
 
 def test_the_normal_run_runs_one_test_at_a_time_as_pit_does(java_project, jdks, maven, gradle):
-    """PIT turns Jupiter's parallel execution off; the normal run followed
+    """PIT turns Jupiter's parallel execution off. The normal run followed
     the project's setting, so two tests that must not overlap failed there."""
     project = java_project("maven")
     resources = project / "src" / "test" / "resources"

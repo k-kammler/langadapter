@@ -81,7 +81,7 @@ def carried_instrument():
 @pytest.fixture
 def carry_instrument():
     """Write the carried instrument as ``conftest.py`` into a directory, as a
-    suite delivered with it carries it, and return the file; an existing
+    suite delivered with it carries it, and return the file. An existing
     conftest.py stays as it is."""
     def carry(suite_dir):
         conftest = Path(suite_dir) / "conftest.py"

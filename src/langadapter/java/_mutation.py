@@ -89,7 +89,7 @@ class MutationSession(CommonMutationSession):
         if workers > self.workers_started:
             raise InvalidRequest(
                 "workers", f"the session has {self.workers_started} "
-                f"worker(s); a run can use them or fewer")
+                f"worker(s). A run can use them or fewer")
         self._target_failure = None
         try:
             target = adapter._project_file("target", request.target)
@@ -380,7 +380,7 @@ class MutationSession(CommonMutationSession):
     ) -> Dict[str, EffectiveSetting]:
         if request.timeout_journal:
             raise InvalidRequest(
-                "timeout_journal", "PIT keeps no per-test journal; it bounds "
+                "timeout_journal", "PIT keeps no per-test journal. It bounds "
                 "each test of a mutant's run")
 
         # PIT's rule: a caller's rule gives its factor and, as the constant

@@ -94,7 +94,11 @@ class Report:
     ``readiness`` covers the named installed consumers, or every installed one.
     ``example`` says in one line what the run on the example gave, empty
     without an example. ``notes`` hold the consumers' notes and what the run on
-    the example noted, such as an example on which every mutant survived."""
+    the example noted, such as an example on which every mutant survived.
+    ``system_issue`` says why the language's operations do not run on this system,
+    as the adapter names it (``execution_setup_issue``), such as the C
+    adapter off Linux, empty when nothing is known to be missing. Then no
+    consumer reads ready."""
 
     language: str
     consumers: Tuple[str, ...]
@@ -107,6 +111,7 @@ class Report:
     problems: Tuple[str, ...] = ()
     not_checked: Tuple[str, ...] = ()
     example: str = ""
+    system_issue: str = ""
     #: Each family whose runs on the example did not start, since the
     #: capability report reads its tool missing setup, with the report's
     #: reason, for the command's refusal. report() sets it, and the
@@ -117,6 +122,8 @@ class Report:
     def lines(self) -> List[str]:
         """The report as plain lines, as ``langadapter check`` prints it."""
         out = [f"Language: {self.language}"]
+        if self.system_issue:
+            out.append(f"This system: {self.system_issue}.")
         if self.example:
             out.append(self.example)
         facts = [i for i in self.items if i.family == "facts"]
@@ -154,6 +161,8 @@ class Report:
     def _ready_lines(self) -> List[str]:
         """Whether the language is ready for the consumers asked for, as one
         line, or none when that is not known."""
+        if self.system_issue:
+            return ["Ready: not on this system."]
         if self.ready is not None:
             return ["Ready: yes." if self.ready else "Ready: no."]
         if self.not_checked:
@@ -169,7 +178,9 @@ class Report:
                    for item in self.items if item.family != "facts")
         if self.readiness:
             out.append("Installed consumers:")
-            out.extend(f"  {r.line(bool(self.example))}" for r in self.readiness)
+            out.extend(f"  {r.title} {r.version}".rstrip() + ": not on this system"
+                       if self.system_issue else f"  {r.line(bool(self.example))}"
+                       for r in self.readiness)
         return out
 
     def _summary(self) -> str:
@@ -508,17 +519,19 @@ def _mutation_probe(adapter: Any, engine: str, example: Any) -> Tuple[str, str]:
 
 
 def _supported(language: str, cls: type, example: Any, from_class: bool
-               ) -> Tuple[Optional[Set[str]], str, type]:
+               ) -> Tuple[Optional[Set[str]], str, type, str]:
     """The operations the adapter supports on the example's context, else the
     current directory's, or None and the reason when the adapter cannot be made,
-    and the class of the adapter made (``cls`` when none was): a language
-    registered with a factory function is checked as the class it makes."""
+    the class of the adapter made (``cls`` when none was): a language
+    registered with a factory function is checked as the class it makes, and
+    why its operations do not run on this system (``execution_setup_issue``)."""
     context = example.context if example is not None else ProjectContext(str(Path.cwd()))
     try:
         adapter = cls(context) if from_class else create(language, context)
-        return {o.name for o in adapter.operation_capabilities() if o.supported}, "", type(adapter)
+        return ({o.name for o in adapter.operation_capabilities() if o.supported}, "",
+                type(adapter), adapter.execution_setup_issue())
     except Exception as exc:  # an unfinished adapter is the normal case
-        return None, f"{type(exc).__name__}: {exc}", cls
+        return None, f"{type(exc).__name__}: {exc}", cls, ""
 
 
 def _status(cls: type, entry: _hooks.Hook, live: Dict[str, Tuple[str, str]],
@@ -697,7 +710,8 @@ def report(language: Union[str, type], example: Any = None,
     # A present hook's detail is a note on what the run on the example gave.
     noted = tuple(detail for status, detail in live.values() if status == PRESENT and detail)
     families = {f.name: f for f in _hooks.families()}
-    supported, unmade, cls = _supported(name, cls, example, isinstance(language, type))
+    supported, unmade, cls, system_issue = _supported(name, cls, example,
+                                                      isinstance(language, type))
     statuses = {entry.name: _status(cls, entry, live, supported)
                 for entry in _hooks.table()}
     own = (((f"the adapter could not be created: {unmade}",) if unmade else ())
@@ -719,7 +733,8 @@ def report(language: Union[str, type], example: Any = None,
         readiness = tuple(_readiness(found[key], statuses, environment, discovered,
                                      unavailable) for key in sorted(found))
         neutral = Report(name, (), tuple(items), readiness=readiness, notes=noted,
-                         problems=own + tuple(p.message for p in problems), example=ran)
+                         problems=own + tuple(p.message for p in problems), example=ran,
+                         system_issue=system_issue)
         object.__setattr__(neutral, "_unavailable", unavailable)
         return neutral
     given = {str(p) for p in profiles}
@@ -747,7 +762,8 @@ def report(language: Union[str, type], example: Any = None,
                       for key in dict.fromkeys(asked) if key in found)
     result = Report(name, named, tuple(items), ready, reached, levels, readiness,
                     composition.notes + noted,
-                    own + tuple(p.message for p in composition.problems), not_checked, ran)
+                    own + tuple(p.message for p in composition.problems), not_checked, ran,
+                    system_issue)
     object.__setattr__(result, "_unavailable", unavailable)
     return result
 

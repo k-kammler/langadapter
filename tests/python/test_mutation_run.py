@@ -1,6 +1,6 @@
 """The self-contained result of a Cosmic Ray run, read from a session: every
-mutant with its key, native record, class and kill-matrix row; counts,
-score and survivors; complete after the session's files are gone."""
+mutant with its key, native record, class and kill-matrix row, and the counts,
+score and survivors. It is complete after the session's files are gone."""
 import contextlib
 import json
 import shutil

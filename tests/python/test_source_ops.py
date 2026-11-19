@@ -27,7 +27,7 @@ SUITE = ("import pytest\n\n\n"
          "    def test_m(self):\n        assert True\n\n"
          "    def test_n(self):\n        assert True\n")
 BROKEN = "def test_a(:\n    pass\n"
-# tree-sitter parses it; CPython's compiler does not.
+# tree-sitter parses it, but CPython's compiler does not.
 REJECTED = "return 1\n\n\ndef test_a():\n    assert 1\n"
 
 
@@ -399,7 +399,7 @@ def test_salvage_tells_a_repair_from_a_failure_to_repair(adapter, tmp_path):
     hopeless = "x = = 1\n" * 30
     beyond = adapter.salvage_syntax(hopeless)
     assert beyond.status == NOT_REPAIRED and beyond.source == hopeless
-    # The last validation sees 24 repairs; the loop discards its 25th,
+    # The last validation sees 24 repairs. The loop discards its 25th,
     # which it never validates.
     assert beyond.detail.startswith("still does not compile after 24")
     # A validator that crashes is no verdict on the source.
@@ -684,7 +684,7 @@ def test_a_test_defined_twice_in_one_scope_is_a_duplicate(adapter):
            "def test_y():\n    assert 1\n\n"
            "def test_x():\n    assert 2\n")
     assert adapter.duplicate_test_names(src) == ["test_x"]
-    # The same method name in two classes is no duplicate; twice in one is.
+    # The same method name in two classes is no duplicate, but twice in one is.
     assert adapter.duplicate_test_names(
         "class TestA:\n    def test_x(self):\n        assert 1\n\n"
         "class TestB:\n    def test_x(self):\n        assert 2\n") == []

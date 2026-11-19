@@ -162,7 +162,7 @@ def test_a_reduction_over_branch_items_keeps_the_suites_coverage(
             t for found_items in tokens.values() for t in found_items
             if t.startswith("B:")}
         # kind(1, 0) alone takes the first condition's true branch of the
-        # return line; JaCoCo's counters would give it no item of its own.
+        # return line. JaCoCo's counters would give it no item of its own.
         others = set().union(*(t for n, t in tokens.items() if n != "KindFirst"))
         assert {t for t in tokens["KindFirst"] - others if t.startswith("B:")}
         kept = _cover(tokens)

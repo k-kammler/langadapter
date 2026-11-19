@@ -1,5 +1,5 @@
 """Unattributed-kill verification: with scripted verification results, the
-updates to the session, cache, unresolved set and captured matrix; and one
+updates to the session, cache, unresolved set and captured matrix, and one
 pass with real Cosmic Ray."""
 from __future__ import annotations
 

@@ -151,7 +151,7 @@ def test_copy_rechecks_inputs_after_preflight_and_retains_partial_owner(tmp_path
 
     monkeypatch.setattr(_prepared_copy, "_ordinary", inspect)
     monkeypatch.setattr(_prepared_copy, "_preflight_tree", checked_tree)
-    with pytest.raises(WorkspacePreparationFailed, match="retained roots") as caught:
+    with pytest.raises(WorkspacePreparationFailed, match="Retained roots") as caught:
         PreparedCopy.create(str(source), parent=str(tmp_path), receipt_parent=str(tmp_path))
     prepared_copy = caught.value._langadapter_prepared_copy
     assert prepared_copy.owned.receipt.is_file()

@@ -341,7 +341,7 @@ def test_kill_items_come_only_from_killers_that_map_to_tests(tmp_path):
             target="sign.py", suite=suite, attribution="all",
             catalogue=Catalogue(operators=(
                 "core/ReplaceComparisonOperator_Gt_Lt",))))
-    # x < 0 fails sign(2) and both negative cases; sign(0) is still -1.
+    # x < 0 fails sign(2) and both negative cases, and sign(0) is still -1.
     (mutant,) = run.mutants
     assert set(mutant.killing_tests) == {
         TestId("test_sign.py", "test_positive"),

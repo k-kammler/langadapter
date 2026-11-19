@@ -127,7 +127,7 @@ class PythonProfile(VersionProfile):
             notes.append(f"{_named(self.runtime.text)} is not among the tested versions ({tested})")
         if not self.library_reads_project_syntax:
             notes.append(f"LangAdapter runs on {self._library_text()} and reads this project's "
-                         f"Python {self._project_text()} sources with its own parser; a source "
+                         f"Python {self._project_text()} sources with its own parser. A source "
                          "using newer syntax is reported as unreadable")
         return ". ".join(notes)
 

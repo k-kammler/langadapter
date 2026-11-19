@@ -704,7 +704,7 @@ def outputs(tmp_path_factory):
 
 #: r2_real_future's message holds the interpreter's own syntax error, whose
 #: column differs between CPython patch releases (3.12.10, which recorded
-#: the outputs, reports 37; 3.12.3 reports 1).
+#: the outputs, reports 37, and 3.12.3 reports 1).
 FUTURE = "from __future__ import annotations, nothere_feature\nimport os\n"
 
 

@@ -412,6 +412,17 @@ def test_the_command_lists_languages_and_checks_one(toy, capsys):
     assert main(["check", "nolanguage"]) == 2
 
 
+def test_the_command_prints_the_installed_version(capsys):
+    """``langadapter --version`` prints the package's version on one line
+    and exits with status 0."""
+    from langadapter.cli import main
+
+    with pytest.raises(SystemExit) as stopped:
+        main(["--version"])
+    assert stopped.value.code == 0
+    assert capsys.readouterr().out == f"langadapter {lb.__version__}\n"
+
+
 def test_the_check_ends_with_its_counts_and_what_is_required(toy, tmp_path, monkeypatch, capsys):
     """The last line counts the facts and hooks by status. Without --for it
     says that none is required, and for a consumer how many of the missing
@@ -530,7 +541,7 @@ def test_a_profile_file_is_checked_against_as_its_path_is_written(item, tmp_path
 
 def test_a_fact_reads_as_a_fact_for_a_consumer(toy, tmp_path):
     """support, collection_unit and execution_kinds are facts in the table and
-    the neutral view; for a consumer that uses them they read as facts too."""
+    the neutral view, and for a consumer that uses them they read as facts too."""
     from tests.test_consumers import _profile
 
     _dist(tmp_path, "factuser", "1.0", profile=_profile(

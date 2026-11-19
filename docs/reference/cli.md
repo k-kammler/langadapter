@@ -10,6 +10,10 @@ command. `langadapter <command> --help` prints the same texts.
 | [`langadapter tutorial`](#tutorial) | Build an adapter for a tiny example language, step by step. |
 | [`langadapter toolchains`](#toolchains) | Install the tools of the named languages, each proved by the check. |
 
+| Option | What |
+| --- | --- |
+| `langadapter --version` | Print the installed LangAdapter version and exit. |
+
 ## `langadapter check` {#check}
 
 Check a language adapter: which facts and hooks it provides, in the order of the reference page Hooks and facts, or by the levels of a consumer.

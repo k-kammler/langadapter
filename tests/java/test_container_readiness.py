@@ -24,9 +24,11 @@ def metadata_flow(request, tmp_path, monkeypatch):
                                        control_environment=lb.Environment({"HOST_SETTING": "host"},
                                                                           inherit=False))
                  if container else lb.LocalExecution())
+    # A path absolute where it runs: "/chosen/..." is not absolute on Windows.
+    chosen = "/chosen/jdk/bin/java" if container else str(tmp_path / "chosen" / "jdk" / "bin" / "java")
     context = lb.ProjectContext(
         root="/project" if container else str(tmp_path),
-        interpreter=lb.Interpreter(path="/chosen/jdk/bin/java"),
+        interpreter=lb.Interpreter(path=chosen),
         execution=execution, environment={"JAVA_EXTRA": "selected"})
     adapter = JavaAdapter(context)
     # Tools are cached on the host: a container looks them up with its host control values.
@@ -120,14 +122,14 @@ def metadata_flow(request, tmp_path, monkeypatch):
     monkeypatch.setattr(_pit, "classpath", pit)
     monkeypatch.setattr(_tools, "jar", jar)
     monkeypatch.setattr(_tools, "stage_files", stage)
-    return SimpleNamespace(adapter=adapter, calls=calls, container=container,
+    return SimpleNamespace(adapter=adapter, calls=calls, container=container, chosen=chosen,
                            selected=selected, context=context, owners=owners)
 
 
 def test_runtime_metadata_uses_the_selected_jdk(metadata_flow):
     flow = metadata_flow
     assert flow.adapter.runtime_version() == flow.selected.version
-    assert flow.calls == [("jdk", "/chosen/jdk/bin/java")]
+    assert flow.calls == [("jdk", flow.chosen)]
 
 
 def test_capability_metadata_uses_selected_jdk_and_staged_tools(metadata_flow):

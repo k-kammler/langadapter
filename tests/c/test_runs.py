@@ -172,11 +172,11 @@ def test_coverage_is_the_target_alone_with_counted_branches(project, adapter, su
     assert run.outcome is la.Outcome.COMPLETED, run.reason
     coverage = run.coverage
     assert coverage.target.path == "src/calc.c"
-    # clamp's lines run; sign and hypotenuse do not; the #if 0 block is no code.
+    # clamp's lines run, sign and hypotenuse do not, and the #if 0 block is no code.
     assert set(coverage.covered) == {6, 7, 8, 10, 13}
     assert {16, 17, 20, 21} <= set(coverage.missing())
     assert not [line for line in coverage.statements if 24 <= line <= 28]
-    # doubled (34, 35) is the target's own code; the header's lines are not.
+    # doubled (34, 35) is the target's own code, and the header's lines are not.
     assert {34, 35} <= set(coverage.missing())
     assert not [line for line in coverage.statements if line >= 40]
     branches = {(b.source, b.destination) for b in coverage.branches}
@@ -551,7 +551,7 @@ def test_counters_that_no_test_alone_can_write_are_the_environments(project, ada
 def test_a_test_that_needs_an_earlier_test_keeps_its_outcome_alone(project, adapter, suite):
     """The alone path blames only a process that ends badly after its result
     line. A test that passed after an earlier one set its state and crashes
-    alone keeps its pass; the one whose exit handler aborts is the error."""
+    alone keeps its pass. The one whose exit handler aborts is the error."""
     body = ("static void bye(void) { abort(); }\nstatic long *shared;\n"
             "UTEST(t, a_sets) { static long value = 7; shared = &value; "
             "ASSERT_EQ(0L, clamp(-5, 0, 10)); }\n"
@@ -1765,7 +1765,7 @@ def test_a_build_that_timed_out_is_made_again(project, adapter, suite, tmp_path,
     c = adapter(root)
     first = c.run_suite(SuiteRunRequest(suite(CLAMP_TESTS), timeout_s=120))
     assert first.outcome is la.Outcome.TIMED_OUT, first.reason
-    # The first build slept and timed out; the same adapter builds again.
+    # The first build slept and timed out. The same adapter builds again.
     second = c.run_suite(SuiteRunRequest(suite(CLAMP_TESTS), timeout_s=120))
     assert second.outcome is la.Outcome.COMPLETED, second.reason
 
@@ -1810,8 +1810,8 @@ def test_the_compiler_comes_from_the_contexts_environment(project, tmp_path, mon
     ("13.3.0", "gcov (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0"),
 ])
 def test_gcovs_version_is_a_word_of_its_line(tmp_path, version, line):
-    """gcov's line may carry a date or a package release after its version;
-    the compiler's version is found as a word of it, and another is refused."""
+    """gcov's line may carry a date or a package release after its version.
+    The compiler's version is found as a word of it, and another is refused."""
     import subprocess
 
     from langadapter.c import _toolchain
@@ -1981,7 +1981,7 @@ def test_c_tests_are_timed_with_each_program_run_once(project, adapter, suite):
 
 def logging_gcc(tool_dir):
     """A gcc in the new ``tool_dir`` that logs each command line and runs the
-    real gcc, with the real gcov beside it; the script and its log."""
+    real gcc, with the real gcov beside it. It returns the script and its log."""
     from langadapter.c import _toolchain
 
     real = shutil.which("gcc")

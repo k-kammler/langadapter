@@ -420,8 +420,8 @@ def record_build(request: BuildRequest) -> "TargetBuild | BuildProblem":
               "configure": _configure_build, "cmake": _cmake_build}
     if request.kind not in builds:
         return BuildProblem(Outcome.UNSUPPORTED,
-                            f"the build kind {request.kind!r} is not supported; "
-                            f"this version supports {', '.join(KINDS)}")
+                            f"the build kind {request.kind!r} is not supported (this "
+                            f"version supports {', '.join(KINDS)})")
     return builds[request.kind](request)
 
 

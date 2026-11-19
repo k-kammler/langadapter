@@ -457,7 +457,7 @@ class PreparedProject:
         if self._closed:
             raise OwnershipRefused("Prepared project is closed")
         if self._use_scope is not None or self._closing_record is not None:
-            raise WorkspaceBusy("Prepared project has an active or retained use; close its owned resources first")
+            raise WorkspaceBusy("Prepared project has an active or retained use. Close its owned resources first")
         parent = _execution_scope._CURRENT.get()
         scope = _execution_scope._Scope(parent=parent)
         scope._prepared_owner = self

@@ -1,46 +1,52 @@
 # Tested environments
 
-LangAdapter 0.1.0 was tested in the combinations below. Other combinations
-may work, but they were not tested.
+The Release column names the newest LangAdapter release that was tested in
+each combination. Other combinations may work, but they were not tested.
 
 ## Where the library runs
 
-| What | Tested |
-| --- | --- |
-| Operating systems | Windows 11, Ubuntu 24.04 under WSL, AlmaLinux 8.10 |
-| Python for the library itself | 3.10, 3.11, 3.12, 3.13 and 3.14, installed from the built wheel into a new virtual environment |
-| The library's own test suite | Python 3.10, 3.11, 3.12, 3.13 and 3.14 on Windows 11 and on Ubuntu 24.04 under WSL, with a real JDK for the Java tests |
+| What | Tested | Release |
+| --- | --- | --- |
+| Operating systems | Windows 11, Ubuntu 24.04 under WSL | 0.1.1 |
+| Operating systems | AlmaLinux 8.10 | 0.1.0 |
+| Python for the library itself | 3.10, 3.11, 3.12, 3.13 and 3.14, installed from the built wheel into a new virtual environment | 0.1.1 |
+| The library's own test suite | Python 3.12 and 3.14 on Windows 11 and on Ubuntu 24.04 under WSL, with a real JDK for the Java tests under WSL | 0.1.1 |
+| The library's own test suite | Python 3.10, 3.11 and 3.13 on Windows 11 and on Ubuntu 24.04 under WSL, with a real JDK for the Java tests | 0.1.0 |
 
 ## Python projects
 
-| What | Tested |
-| --- | --- |
-| Project interpreters | 3.10 to 3.15 |
-| Tools in the project's environment | pytest 8.1.1, coverage 7.6.8 and Cosmic Ray 8.4.1, and on Python 3.14 and 3.15 pytest 8.4.2, coverage 7.16.2 and Cosmic Ray 8.4.1 |
-| Operations | test runs, coverage, per-test evidence, mutation sessions, timing |
+| What | Tested | Release |
+| --- | --- | --- |
+| Project interpreters | 3.10 to 3.15 | 0.1.0 |
+| Tools in the project's environment | pytest 8.1.1, coverage 7.6.8 and Cosmic Ray 8.4.1 on Python 3.12, and pytest 8.4.2, coverage 7.16.2 and Cosmic Ray 8.4.1 on Python 3.14 | 0.1.1 |
+| Tools in the project's environment | pytest 8.1.1, coverage 7.6.8 and Cosmic Ray 8.4.1 on Python 3.10, 3.11 and 3.13, and pytest 8.4.2, coverage 7.16.2 and Cosmic Ray 8.4.1 on Python 3.15 | 0.1.0 |
+| Operations | test runs, coverage, per-test evidence, mutation sessions, timing | 0.1.1 |
 
 ## Java projects
 
-| What | Tested |
-| --- | --- |
-| JDKs | Temurin 11, 17, 21, 25, 26 and 27 |
-| Build tools | Maven 3.9, a project's Maven wrapper, Gradle 9.8 |
-| Test frameworks | JUnit 4 (4.13.2, run on the JUnit Platform), JUnit 5, JUnit 6 |
-| Measurement tools | JaCoCo 0.8.15, PIT 1.30.0 with its JUnit 5 plugin 1.2.3 |
-| Projects | language levels 8 (on JDK 11 and 17), 11, 17 and 21, each with Maven and with Gradle, except level 8 on JDK 11 with Gradle |
-| Operations | project resolution, test runs, coverage, per-test evidence, mutation, timing |
+| What | Tested | Release |
+| --- | --- | --- |
+| JDKs | Temurin 11, 17, 21 and 25 | 0.1.1 |
+| JDKs | Temurin 26 and 27 | 0.1.0 |
+| Build tools | Maven 3.9, Gradle 9.8 | 0.1.1 |
+| Build tools | a project's Maven wrapper | 0.1.0 |
+| Test frameworks | JUnit 4 (4.13.2, run on the JUnit Platform), JUnit 5, JUnit 6 | 0.1.1 |
+| Measurement tools | JaCoCo 0.8.15, PIT 1.30.0 with its JUnit 5 plugin 1.2.3 | 0.1.1 |
+| Projects | language levels 8 (on JDK 17), 11 and 17, each with Maven and with Gradle | 0.1.1 |
+| Projects | language level 8 on JDK 11 with Maven, and language level 21 with Maven and with Gradle | 0.1.0 |
+| Operations | project resolution, test runs, coverage, per-test evidence, mutation, timing | 0.1.1 |
 
 A project that declares a JUnit 4 version older than 4.12 runs its tests with
 JUnit 4.13.2.
 
 ## C projects
 
-| What | Tested |
-| --- | --- |
-| System | Ubuntu 24.04 |
-| Compiler and coverage | GCC 13.3 with its gcov |
-| Mutation | Mull 0.34.2 with clang 18.1.3 |
-| Builds | make, CMake 4.4.4 |
+| What | Tested | Release |
+| --- | --- | --- |
+| System | Ubuntu 24.04 | 0.1.1 |
+| Compiler and coverage | GCC 13.3 with its gcov | 0.1.1 |
+| Mutation | Mull 0.34.2 with clang 18.1.3 | 0.1.1 |
+| Builds | make, CMake 4.4.4 | 0.1.1 |
 
 The C adapter runs on Linux only. It needs GCC 7 or newer with its gcov,
 and refuses clang as the project's compiler and an older GCC, which does not
@@ -56,8 +62,8 @@ or newer, below 9, which reads gcov's counters.
 ## The toolchain recipe
 
 `langadapter toolchains` ([Install the toolchains](../guide/toolchains.md))
-was tested on Ubuntu 24.04 on x86_64 under WSL, run as a user from the built
-wheel. Its parts install x86_64 tools.
+was tested with LangAdapter 0.1.0 on Ubuntu 24.04 on x86_64 under WSL, run
+as a user from the built wheel. Its parts install x86_64 tools.
 
 | Part | Installs |
 | --- | --- |
@@ -80,9 +86,9 @@ supported is refused with the reason and the supported versions.
 
 ## Containers
 
-| What | Tested |
-| --- | --- |
-| Python projects in Linux Docker containers | from Ubuntu 24.04 under WSL, with project Python 3.10 in the container image: coverage and mutation |
+| What | Tested | Release |
+| --- | --- | --- |
+| Python projects in Linux Docker containers | from Ubuntu 24.04 under WSL, with project Python 3.10 in the container image: coverage and mutation | 0.1.0 |
 
 ## macOS
 

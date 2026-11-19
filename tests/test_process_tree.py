@@ -244,7 +244,7 @@ def test_a_launch_that_started_nothing_leaves_its_scope_closable():
     with pytest.raises(OSError) as caught:
         with scope:
             _process_tree.start(["langadapter-no-such-command-anywhere"])
-    # Linux's launcher names its own closed command (_Command); elsewhere the
+    # Linux's launcher names its own closed command (_Command). Elsewhere the
     # launch names a disposed owner.
     if sys.platform != "linux":
         assert caught.value._langadapter_command._langadapter_command_disposed is True

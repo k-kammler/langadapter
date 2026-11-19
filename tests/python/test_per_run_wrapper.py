@@ -167,7 +167,7 @@ KEPT = [".git/index", "data.txt", "pkg/mod.py", "session/cr-session.sqlite-journ
 def test_a_run_removes_the_files_earlier_runs_left_in_its_root(tmp_path):
     """The Python wrapper: every file below the root that its inventory does
     not list goes before the run, except in the git directory and the directories
-    the session keeps; directories stay."""
+    the session keeps. Directories stay."""
     root = _root_with_leftovers(tmp_path)
     result, _start, _base = _run_wrapper(
         tmp_path, [sys.executable, "-m", "wrapper_probe"],
@@ -202,7 +202,7 @@ def test_the_shell_wrapper_removes_the_files_earlier_runs_left_in_its_root(tmp_p
 def test_the_inventory_is_one_listing_for_the_engine_the_runner_and_the_wrapper(tmp_path):
     """The engine's run_inventory, the container runner's copy and the Python
     wrapper's: the same entries, links not followed, the git directory and the
-    kept directories left out; remove_unlisted removes what the wrapper would."""
+    kept directories left out, and remove_unlisted removes what the wrapper would."""
     root = _root_with_leftovers(tmp_path)
     keep = ("./session/",)
     namespace: dict = {}

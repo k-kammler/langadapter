@@ -13,7 +13,7 @@ if [ "$#" -ne 3 ] || [ -z "$1" ] || [ -z "$2" ]; then
 fi
 case "$(uname -m)" in
     x86_64) ;;
-    *) echo "java.ubuntu-24.04.sh installs x86_64 tools, and this machine is $(uname -m). The guide lists the steps: https://k-kammler.github.io/langadapter/guide/toolchains/" >&2
+    *) echo "langadapter toolchains java installs x86_64 tools, and this machine is $(uname -m). The guide lists the steps: https://k-kammler.github.io/langadapter/guide/toolchains/" >&2
        exit 2 ;;
 esac
 mkdir -p "$1"

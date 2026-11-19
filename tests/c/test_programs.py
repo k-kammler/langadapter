@@ -180,7 +180,7 @@ def test_the_projects_prelude_comes_first_in_every_test_file(project, adapter, s
     framework = root / "test" / "framework.c"
     framework.write_text(SETUP_GUARD + framework.read_text(), encoding="utf-8")
     (root / "test" / "test-prelude.c").write_text(PRELUDE_PROGRAM, encoding="utf-8")
-    # abs needs stdlib.h and PRELUDE_LIMIT the project's header; neither test
+    # abs needs stdlib.h and PRELUDE_LIMIT the project's header. Neither test
     # includes them, and the setup file never takes them.
     prelude = {"c_test_prelude": "stdlib.h test/prelude.h"}
     programs = _suite(root, "test/test-prelude.c")
@@ -206,7 +206,7 @@ def test_the_target_is_never_linked_twice(project, adapter, pattern):
 
 def test_the_programs_support_sources_are_their_setup_files(project, adapter):
     """c_test_support names the sources the project's own programs build
-    with; setup_files gives them, so a consumer that builds the suite from
+    with, and setup_files gives them, so a consumer that builds the suite from
     setup_files (Testuary's run_test_files and mutation request) runs the
     programs as the project does. Other modes keep none."""
     root = project("calc_programs")

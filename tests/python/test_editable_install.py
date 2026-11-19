@@ -181,7 +181,7 @@ def _covered(context, layout="src", shape="package", **preparation):
 def test_the_measured_run_imports_the_copy(installed, style, layout):
     """A path entry (setuptools for a plain src layout, hatch, flit, poetry)
     and an appended import hook (setuptools otherwise) both map the package
-    to the original; the copy's directory goes ahead of them, whatever its name."""
+    to the original. The copy's directory goes ahead of them, whatever its name."""
     run = _covered(installed(style, layout), layout)
     assert run.outcome is Outcome.COMPLETED, run.reason
     assert run.coverage.covered == (1, 2, 3) and run.coverage.line_percent == 75.0

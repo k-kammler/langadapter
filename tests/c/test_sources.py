@@ -415,7 +415,7 @@ UTEST_MAIN()
 """
     result = _adapter(tmp_path).merge_sources(first, second, separator="// second")
     assert result.status == "applied", result.detail
-    assert result.detail == "renamed pick -> pick_2, twice -> twice_2; shared add, total"
+    assert result.detail == "renamed pick -> pick_2, twice -> twice_2 and shared add, total"
     rest = result.source.split("// second\n")[1]
     assert "int add(int a, int b);" in rest and "extern long int total;" in rest
     assert "add(twice_2(1), 3)" in rest and "int (*pick_2)(int value);" in rest
@@ -693,7 +693,7 @@ def test_the_extension_modules_of_setup_py(tmp_path):
     assert _build.declared_module(computed, "pkg/_two.c") == "pkg._two"
     assert _build.builds_extensions(computed)
     # A setup.py that cannot be read counts as building extensions, so the
-    # setuptools build reports its own error; it declares no module.
+    # setuptools build reports its own error. It declares no module.
     broken = tmp_path / "broken"
     broken.mkdir()
     (broken / "setup.py").write_text('import not_installed_here\n')

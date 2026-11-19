@@ -73,7 +73,7 @@ def route(tmp_path, monkeypatch):
 
         def communicate(self, input=None, timeout=None):
             state.calls.append(("communicate", input, timeout))
-            # The channel as the running command sees it; a confirmed
+            # The channel as the running command sees it. A confirmed
             # disposal removes the directory afterwards.
             state.files = {path.name: path.read_bytes() for path in state.channel.iterdir()}
             write("COMPLETE", 702, 7)
@@ -104,7 +104,7 @@ def route(tmp_path, monkeypatch):
     monkeypatch.setattr(subprocess, "run", forbidden)
     monkeypatch.setattr(os, "kill", forbidden)
     monkeypatch.setattr(_process_tree, "start", launch)
-    # The outer owner still uses the real finish; only its acquired host handle is controlled.
+    # The outer owner still uses the real finish. Only its acquired host handle is controlled.
     real_finish = _process_tree.finish
     monkeypatch.setattr(_process_tree, "finish", lambda handle, **kw:
                         finish(handle, **kw) if handle is runner else real_finish(handle, **kw))

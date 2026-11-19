@@ -1018,7 +1018,7 @@ class MutationOperations:
             raise InvalidRequest("engine", "must be a non-empty engine name")
         known = self.engines()
         if known and engine not in known:
-            raise InvalidRequest("engine", f"unknown engine {engine!r}; known: {', '.join(known)}")
+            raise InvalidRequest("engine", f"unknown engine {engine!r}. Known: {', '.join(known)}")
 
     def operators(self, engine: str) -> OperatorCatalogue:
         """The mutation operators ``engine`` offers in the project's

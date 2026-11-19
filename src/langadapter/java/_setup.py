@@ -48,6 +48,13 @@ _SELECT_JDK = "select the JDK's home directory or the full path of its bin/java"
 _SELECT_BUILD = "select the project directory that has the pom.xml or Gradle build file"
 #: What the runtime item says inspection left untried.
 _UNTRIED = "the project is not compiled or run yet"
+#: The next step of an item that needs a download first, which fills the
+#: build's local repository and the tool cache.
+_DOWNLOAD_RUN = ("a tool check that may download, or a run with network access, downloads what is "
+                 "missing once, before any offline run")
+#: Each measurement tool's jars in the tool cache and its pinned version.
+_TOOL_JARS = {"jacoco": ((_jacoco.AGENT, *_jacoco.CORE), _jacoco.VERSION),
+              "pitest": (_pit.JARS, _pit.VERSION)}
 #: Each build system's name, wrapper, command and naming variable.
 _LAUNCHERS = {"maven": ("Maven", "mvnw", "mvn", "LANGADAPTER_MAVEN"),
               "gradle": ("Gradle", "gradlew", "gradle", "LANGADAPTER_GRADLE")}
@@ -170,16 +177,15 @@ def _tools_item(request, key, required, coordinates, version):
                                 reason=str(error), action="set LANGADAPTER_JAVA_TOOLS to the Java tool cache directory")
     if absent and _tools.offline(environment):
         return ProjectSetupItem(key, required, Availability.MISSING_SETUP, Outcome.MISSING_SETUP,
-            reason=(f"{len(absent)} of {len(coordinates)} tool jars are not downloaded, and downloads "
-                    "are off for runs"),
-            action=(f"download them once: start a run with network access and without {_tools.OFFLINE}, "
-                    "or fill the tool cache (LANGADAPTER_JAVA_TOOLS) another way"))
+            reason=(f"{len(absent)} of {len(coordinates)} tool jars are not downloaded, and "
+                    f"{_tools.OFFLINE} turns downloads off"),
+            action=(f"unset {_tools.OFFLINE}, or fill the tool cache (LANGADAPTER_JAVA_TOOLS) another "
+                    "way, then run the tool check again"))
     if absent:
         return ProjectSetupItem(key, required, None, None,
             reason=(f"{len(absent)} of {len(coordinates)} tool jars are not downloaded yet, and the first "
                     "run downloads them, which needs network access"),
-            action="start a run with network access, which downloads them once, before any offline run",
-            tried_by="run")
+            action=_DOWNLOAD_RUN, tried_by="run")
     return ProjectSetupItem(key, required, None, Outcome.COMPLETED, selected=str(directory), version=version,
                             reason="downloaded, not yet tried", action=_actions.RUN, tried_by="run")
 
@@ -274,9 +280,8 @@ def inspect(adapter, request, *, verification=False):
                 if len(tools) == 1 else None)
     runtime = _runtime(request, executor, any(item.execution_backed for item in requested))
     uses = {tool for item in requested for tool in _tool_uses(request, item.name)}
-    tools = (_tools_item(request, "jacoco", "jacoco" in uses, (_jacoco.AGENT, *_jacoco.CORE),
-                         _jacoco.VERSION),
-             _tools_item(request, "pitest", "pitest" in uses, _pit.JARS, _pit.VERSION))
+    tools = (_tools_item(request, "jacoco", "jacoco" in uses, *_TOOL_JARS["jacoco"]),
+             _tools_item(request, "pitest", "pitest" in uses, *_TOOL_JARS["pitest"]))
     context = request.context
     if (runtime.required and runtime.outcome is not Outcome.COMPLETED) or (build.required and build.ambiguous):
         context = None
@@ -346,8 +351,11 @@ _WRAPPED = ("the build's wrapper may download its build tool before the build st
 _WRAPPER_LEFT = ("ran the JDK's version commands and tried the needed measurement tools it could "
                  "start without the build in a project copy, and left the build to the first run, "
                  "since the build's wrapper may download its build tool")
-#: The build items' reason once the check tried the build without success.
-_BUILD_TRIED = "found, and the build was tried in a project copy"
+#: The reason of a verification that left steps to the first run.
+_LEFT = ("ran the JDK's version commands, tried in a project copy what it could without running "
+         "a test, and left the other steps to the first run")
+#: The build items' reason once the check's build did not resolve the project.
+_BUILD_UNRESOLVED = "found, and the check's build did not resolve the project"
 
 
 def _set(items, key, **fields):
@@ -362,8 +370,8 @@ def _tried(items, key, outcome, reason, action=None):
          Availability.MISSING_SETUP if outcome is Outcome.MISSING_SETUP else None)
 
 
-def _for_run(items, key, reason):
-    _set(items, key, reason=reason, action=_actions.RUN, tried_by="run")
+def _for_run(items, key, reason, action=_actions.RUN):
+    _set(items, key, reason=reason, action=action, tried_by="run")
 
 
 def _no_downloads(environment):
@@ -397,8 +405,6 @@ def _resolve(copy, request, items, scratch):
     deadline = time.monotonic() + request.remaining_timeout("Java build resolution", probe=False)
     resolution = project.resolve(copy.context.root, copy._jdk(), copy._executor, str(scratch / "resolution"),
                                  environment=copy.context.environment, deadline=deadline, offline=offline)
-    gap = _download_gap(resolution, offline)
-    output = (resolution.output or "").strip()
     if resolution.outcome is Outcome.COMPLETED:
         # The copy's runs, discovery among them, use this resolution.
         copy._resolution = resolution
@@ -406,8 +412,14 @@ def _resolve(copy, request, items, scratch):
             _tried(items, key, Outcome.COMPLETED, "found, and the build resolved the project")
         _tried(items, "build_resolution", Outcome.COMPLETED, "the build resolved the project as a run does")
         return resolution.project
-    for key in ("build_descriptor", "build_launcher"):
-        _set(items, key, reason=_BUILD_TRIED)
+    _unresolved(copy, resolution, _download_gap(resolution, offline), items)
+    return None
+
+
+def _unresolved(copy, resolution, gap, items):
+    """``build_resolution`` after a resolution that did not complete, and the
+    build's items, which take its next step."""
+    output = (resolution.output or "").strip()
     # A run that builds offline too fails the same way, so the check reports the gap itself
     # instead of leaving it to the first run.
     tool = next(item for item in items if item.key == "build_descriptor").selected
@@ -419,14 +431,17 @@ def _resolve(copy, request, items, scratch):
                "add the artifact to the build's local repository, or let the project's runs build "
                "online, then run the tool check again")
     elif gap and not runs_offline:
-        _for_run(items, "build_resolution", gap[1])
+        _for_run(items, "build_resolution", gap[1], _DOWNLOAD_RUN)
     elif resolution.outcome is Outcome.TIMED_OUT:
         _for_run(items, "build_resolution", _NO_TIME)
     else:
         _tried(items, "build_resolution", resolution.outcome,
                resolution.reason + (f": {output[-1000:]}" if output else ""),
                "fix what the build reports, then run the tool check again")
-    return None
+    # The build's own item says why, and its next step is theirs.
+    action = next(item for item in items if item.key == "build_resolution").action
+    for key in ("build_descriptor", "build_launcher"):
+        _set(items, key, reason=_BUILD_UNRESOLVED, action=action)
 
 
 def _test_sources(built, executor, deadline):
@@ -489,7 +504,8 @@ def _discover(copy, built, request, items, scratch, classes):
             _tried(items, "test_discovery", Outcome.MISSING_SETUP, str(error))
         else:
             _for_run(items, "test_discovery",
-                     "the JUnit launcher's jars are not downloaded yet, and the first run downloads them")
+                     "the JUnit launcher's jars are not downloaded yet, and the first run downloads them",
+                     _DOWNLOAD_RUN)
         return
     except OSError as error:
         _preserve_owner(error)
@@ -507,26 +523,30 @@ def _discover(copy, built, request, items, scratch, classes):
 
 
 def _start(copy, built, request, items, scratch, key):
-    """A cached measurement tool an operation needs, started once on the
-    selected JDK: JaCoCo's agent on ``java -version``, PIT's entry point with
-    its help on the resolved classpath."""
+    """A measurement tool an operation needs, started once on the selected
+    JDK: JaCoCo's agent on ``java -version``, PIT's entry point with its help
+    on the resolved classpath. Its jars come from the tool cache. When the
+    request allows acquisition, the missing ones are downloaded first, within
+    the check's time."""
     item = next(item for item in items if item.key == key)
-    if not (item.required and item.outcome is Outcome.COMPLETED and item.tried_by == "run"
-            and (key == "jacoco" or built is not None)):
+    if not (item.required and item.tried_by == "run" and (key == "jacoco" or built is not None)
+            and (item.outcome is Outcome.COMPLETED or request.allow_acquisition)):
         return
     jdk_found, executor = copy._jdk(), copy._executor
     environment = _tools.host_environment(copy.context)
     environment = environment if request.allow_acquisition else _no_downloads(environment)
+    jars, version = _TOOL_JARS[key]
     start_dir = scratch / key
     try:
         start_dir.mkdir()
+        _fetch(request, jars, environment, key)
         if key == "jacoco":
             tool = _jacoco.agent_argument(start_dir / "start.exec", ("LangAdapterStart",), environment,
                                           executor=executor, scratch=start_dir)
             argv = [jdk_found.tool("java"), tool, "-version"]
         else:
-            jars = _pit.classpath(environment, executor=executor, scratch=start_dir)
-            argv = [jdk_found.tool("java"), "-cp", JavaEnv(executor).path_list((*jars, *built.run_classpath())),
+            staged = _pit.classpath(environment, executor=executor, scratch=start_dir)
+            argv = [jdk_found.tool("java"), "-cp", JavaEnv(executor).path_list((*staged, *built.run_classpath())),
                     _pit.REPORT_CLASS, "-h"]
         done = JavaEnv(executor).run(argv, request.remaining_timeout(f"Java {key} start"), f"{key} start",
                                      cwd=copy.context.root, env=project.tool_environment(
@@ -534,17 +554,31 @@ def _start(copy, built, request, items, scratch, key):
     except subprocess.TimeoutExpired:
         _for_run(items, key, _NO_TIME)
         return
-    except (OSError, _tools.ToolUnavailable) as error:
+    except _tools.ToolUnavailable as error:
+        # A jar the cache does not hold or match, or a download that failed.
         _preserve_owner(error)
-        failure, action = str(error), "check that the tool cache can be read, then run the tool check again"
+        reason, action = str(error), "fix what the tool cache reports, then run the tool check again"
+    except OSError as error:
+        _preserve_owner(error)
+        reason = f"did not start on the selected JDK: {error}"
+        action = "check that the tool cache can be read, then run the tool check again"
     else:
         if done.returncode == 0:
             _tried(items, key, Outcome.COMPLETED, "started once on the selected JDK")
+            _set(items, key, selected=str(_tools.cache_dir(environment)), version=version)
             return
-        failure = (done.stdout + done.stderr).strip()[-1000:]
+        reason = f"did not start on the selected JDK: {(done.stdout + done.stderr).strip()[-1000:]}"
         action = "select a JDK the tool supports, then run the tool check again"
     _set(items, key, outcome=Outcome.INFRASTRUCTURE_FAILURE, version=None, tried_by=None,
-         reason=f"did not start on the selected JDK: {failure}", action=action)
+         reason=reason, action=action)
+
+
+def _fetch(request, jars, environment, key):
+    """``jars`` from the tool cache, those missing downloaded first when
+    ``environment`` allows downloads, all within the check's remaining time."""
+    deadline = time.monotonic() + request.remaining_timeout(f"Java {key} download", probe=False)
+    for coordinates in jars:
+        _tools.jar(coordinates, environment, deadline=deadline)
 
 
 def _after_build(items, tried):
@@ -614,7 +648,15 @@ def _try_build(adapter, context, request, items):
                     _for_run(items, key, _NO_TIME)
         for key in ("jacoco", "pitest"):
             _start(copy, built, request, items, scratch, key)
-    return _after_build(items, not wrapped), _WRAPPER_LEFT if wrapped else _TRIED
+    return (_after_build(items, not wrapped),
+            _WRAPPER_LEFT if wrapped else _LEFT if _left_to_run(items) else _TRIED)
+
+
+def _left_to_run(items):
+    """Whether verification left a build step or a required tool to the first run."""
+    steps = dict(_STEPS)
+    return any(item.key in _TRIED_KEYS and item.tried_by == "run" and (item.required or item.key in steps)
+               for item in items)
 
 
 def _home(address, *, container):

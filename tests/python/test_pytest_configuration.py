@@ -1,6 +1,6 @@
 """The project's pytest configuration is the file pytest itself reads when it
 starts in the project's root (its own order and rules), asked of the
-project's interpreter, here this one; a staged suite's runs name its copy
+project's interpreter, here this one. A staged suite's runs name its copy
 beside the suite."""
 from __future__ import annotations
 

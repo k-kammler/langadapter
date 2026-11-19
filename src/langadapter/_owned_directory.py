@@ -128,10 +128,10 @@ class OwnedDirectory:
             record = json.loads(self.receipt.read_text(encoding="utf-8"))
         except (OSError, ValueError) as exc:
             raise OwnershipRefused(
-                f"ownership cannot be verified; directory retained: {self.root}") from exc
+                f"ownership cannot be verified. Directory retained: {self.root}") from exc
         if record != self._record():
             raise OwnershipRefused(
-                f"creation receipt does not match; directory retained: {self.root}")
+                f"creation receipt does not match. Directory retained: {self.root}")
 
     def verify(self) -> None:
         self._verify_receipt()
@@ -139,20 +139,20 @@ class OwnedDirectory:
             identity = self.root.lstat()
         except OSError as exc:
             raise OwnershipRefused(
-                f"ownership cannot be verified; directory retained: {self.root}") from exc
+                f"ownership cannot be verified. Directory retained: {self.root}") from exc
         if (not stat.S_ISDIR(identity.st_mode)
                 or (identity.st_dev, identity.st_ino) != (self.device, self.inode)
                 or getattr(self.root, "is_junction", lambda: False)()):
             raise OwnershipRefused(
-                f"creation receipt does not match; directory retained: {self.root}")
+                f"creation receipt does not match. Directory retained: {self.root}")
         try:
             token = self.marker.read_text(encoding="ascii")
         except (OSError, UnicodeError) as exc:
             raise OwnershipRefused(
-                f"creation marker is unavailable; directory retained: {self.root}") from exc
+                f"creation marker is unavailable. Directory retained: {self.root}") from exc
         if token != self.token:
             raise OwnershipRefused(
-                f"creation marker does not match; directory retained: {self.root}")
+                f"creation marker does not match. Directory retained: {self.root}")
 
     def remove(self) -> None:
         """Remove only this still-matching directory, keeping failed receipts. It
@@ -183,22 +183,22 @@ class _DirectoryCreation:
 
     def _verify_root(self) -> None:
         if self.identity is None:
-            raise OwnershipRefused(f"allocation identity was not captured; retained: {self.root}")
+            raise OwnershipRefused(f"allocation identity was not captured. Retained: {self.root}")
         observed = self.root.lstat()
         if (not stat.S_ISDIR(observed.st_mode)
                 or (observed.st_dev, observed.st_ino) != (
                     self.identity.st_dev, self.identity.st_ino)
                 or getattr(self.root, "is_junction", lambda: False)()):
-            raise OwnershipRefused(f"allocated directory was replaced; retained: {self.root}")
+            raise OwnershipRefused(f"allocated directory was replaced. Retained: {self.root}")
 
     @staticmethod
     def _write_acquired(path: Path, identity: Optional[os.stat_result], value: str) -> None:
         if identity is None:
-            raise OwnershipRefused(f"allocated file identity is unavailable; retained: {path}")
+            raise OwnershipRefused(f"allocated file identity is unavailable. Retained: {path}")
         observed = path.lstat()
         if (not stat.S_ISREG(observed.st_mode)
                 or (observed.st_dev, observed.st_ino) != (identity.st_dev, identity.st_ino)):
-            raise OwnershipRefused(f"allocated file was replaced; retained: {path}")
+            raise OwnershipRefused(f"allocated file was replaced. Retained: {path}")
         handle = os.open(path, os.O_WRONLY | getattr(os, "O_NOFOLLOW", 0))
         with os.fdopen(handle, "w", encoding="utf-8") as stream:
             opened = os.fstat(stream.fileno())

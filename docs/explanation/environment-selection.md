@@ -102,7 +102,8 @@ the build, the tool check tries the build in the copy as a run does. The item
 sets `allow_acquisition`. `test_compilation` compiles every test source, and
 `test_discovery` lists the compiled tests with JUnit without running one. Each
 of JaCoCo and PIT that a requested operation needs starts once on the selected
-JDK when its jars are in the tool cache, PIT only after the build resolved. A
+JDK when its jars are in the tool cache, or once the check has downloaded them
+when the request sets `allow_acquisition`, PIT only after the build resolved. A
 step that needs a download first, or that fails offline for a reason the check
 does not know, stays an item the first run tries, as does a step the check has
 no time left for. When the project's own runs build offline (`-o` or

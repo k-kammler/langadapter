@@ -338,6 +338,7 @@ def test_the_command_page_is_the_command_line_with_every_option():
         "docs/reference/cli.md differs from the command line: run python tools/guide_pages.py")
     for name in ("check", "new-language", "tutorial", "toolchains"):
         assert f"## `langadapter {name}` {{#{name}}}" in page
+    assert "| `langadapter --version` | Print the installed LangAdapter version and exit. |" in page
     for argument in ("[language]", "--extension ITEM", "--test-pattern PATTERN",
                      "--grammar NAME", "--update-record", "--auto", "--speed SPEED",
                      "LANGUAGE [LANGUAGE ...]", "--list"):

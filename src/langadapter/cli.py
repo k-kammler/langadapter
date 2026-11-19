@@ -9,6 +9,7 @@ Without a language it lists the registered languages, the installed
 consumers and the problems found. ``langadapter tutorial`` builds an adapter
 for a tiny example language step by step. ``langadapter toolchains LANGUAGE...``
 installs the named languages' tools on this system (``langadapter.toolchains``).
+``langadapter --version`` prints the installed version.
 
 ``langadapter new-language LANGUAGE --file-extension EXT [--for ITEM]...``
 writes one file, ``LANGUAGE.py``, from the hook table
@@ -31,7 +32,7 @@ import textwrap
 from dataclasses import dataclass, field
 from importlib import resources
 from pathlib import Path
-from langadapter import consumers as _consumers, hooks as _hooks
+from langadapter import __version__, consumers as _consumers, hooks as _hooks
 from langadapter._words import listed
 
 
@@ -40,6 +41,8 @@ def parser(prog: str = "langadapter") -> argparse.ArgumentParser:
     ``prog`` names the command in usage lines."""
     result = argparse.ArgumentParser(prog=prog, allow_abbrev=False,
                                      description="Language adapters for test tools.")
+    result.add_argument("--version", action="version", version=f"langadapter {__version__}",
+                        help="Print the installed LangAdapter version and exit.")
     commands = result.add_subparsers(dest="command", required=True)
     check = commands.add_parser(
         "check", allow_abbrev=False,
@@ -62,6 +65,42 @@ def parser(prog: str = "langadapter") -> argparse.ArgumentParser:
     check.add_argument("--example", default="", metavar="DIR",
                        help="Run the language's suite on the test files in the directory DIR, "
                             "found by its test file rule.")
+    _add_new_language(commands)
+    tutorial = commands.add_parser(
+        "tutorial", allow_abbrev=False,
+        help="Build an adapter for a tiny example language, step by step.",
+        description="Build an adapter for the Toy, a tiny example language, step by step: "
+                    "run its tests, find and remove tests, measure coverage, run mutation "
+                    "testing, repair loading and declare versions, each step checked.")
+    tutorial.add_argument("--for", dest="consumers", action="append", default=[],
+                          metavar="ITEM",
+                          help="Also show what a consumer needs, from its installed "
+                               "requirement profile: ITEM names it by its module "
+                               "(repeatable).")
+    from langadapter.tutorial import _add_options
+
+    _add_options(tutorial, "langadapter-tutorial")
+    toolchains = commands.add_parser(
+        "toolchains", allow_abbrev=False,
+        help="Install the tools of the named languages, each proved by the check.",
+        description="Install the tools of the named languages for this system, each language's "
+                    "part ending with langadapter check on a small example. The parts run on "
+                    "Ubuntu 24.04, also in WSL and in a container.")
+    toolchains.add_argument("languages", nargs="+", metavar="LANGUAGE",
+                            help="python, java, c, a language an extension adds, or all.")
+    toolchains.add_argument("--into", default="", metavar="DIR",
+                            help="Install below DIR, by default the user's data directory "
+                                 "(langadapter/toolchains there).")
+    toolchains.add_argument("--list", dest="list_only", action="store_true",
+                            help="List each part and what it downloads, and run none.")
+    toolchains.add_argument("--extension", dest="extensions", action="append", default=[],
+                            metavar="ITEM", help="Load ITEM first, a file or an installed "
+                                                 "module that adds a language (repeatable).")
+    return result
+
+
+def _add_new_language(commands) -> None:
+    """The ``new-language`` command and its options, among ``commands``."""
     new = commands.add_parser(
         "new-language", allow_abbrev=False,
         help="Write a new language's file, with every hook commented out.",
@@ -103,37 +142,6 @@ def parser(prog: str = "langadapter") -> argparse.ArgumentParser:
     new.add_argument("--update-record", action="store_true",
                      help="Record the installed consumers' versions in a shared package's "
                           "pyproject.toml.")
-    tutorial = commands.add_parser(
-        "tutorial", allow_abbrev=False,
-        help="Build an adapter for a tiny example language, step by step.",
-        description="Build an adapter for the Toy, a tiny example language, step by step: "
-                    "run its tests, find and remove tests, measure coverage, run mutation "
-                    "testing, repair loading and declare versions, each step checked.")
-    tutorial.add_argument("--for", dest="consumers", action="append", default=[],
-                          metavar="ITEM",
-                          help="Also show what a consumer needs, from its installed "
-                               "requirement profile: ITEM names it by its module "
-                               "(repeatable).")
-    from langadapter.tutorial import _add_options
-
-    _add_options(tutorial, "langadapter-tutorial")
-    toolchains = commands.add_parser(
-        "toolchains", allow_abbrev=False,
-        help="Install the tools of the named languages, each proved by the check.",
-        description="Install the tools of the named languages for this system, each language's "
-                    "part ending with langadapter check on a small example. The parts run on "
-                    "Ubuntu 24.04, also in WSL and in a container.")
-    toolchains.add_argument("languages", nargs="+", metavar="LANGUAGE",
-                            help="python, java, c, a language an extension adds, or all.")
-    toolchains.add_argument("--into", default="", metavar="DIR",
-                            help="Install below DIR, by default the user's data directory "
-                                 "(langadapter/toolchains there).")
-    toolchains.add_argument("--list", dest="list_only", action="store_true",
-                            help="List each part and what it downloads, and run none.")
-    toolchains.add_argument("--extension", dest="extensions", action="append", default=[],
-                            metavar="ITEM", help="Load ITEM first, a file or an installed "
-                                                 "module that adds a language (repeatable).")
-    return result
 
 
 def _new_language_command(options: argparse.Namespace) -> int:
@@ -346,7 +354,8 @@ def _check(options: argparse.Namespace) -> int:
         return 2
     print("\n".join(result.lines()))
     failing = any(item.status == FAILING for item in result.items)
-    return 0 if result.ready in (None, True) and not result.problems and not failing else 1
+    return (0 if result.ready in (None, True) and not result.problems and not failing
+            and not result.system_issue else 1)
 
 
 def _toolchains(options: argparse.Namespace) -> int:

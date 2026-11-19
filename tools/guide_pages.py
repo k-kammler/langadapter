@@ -402,6 +402,9 @@ def render_commands(command_line) -> str:
              "| Command | What |", "| --- | --- |"]
     lines += [f"| [`{prog} {choice.dest}`](#{choice.dest}) | {_plain(choice.help)} |"
               for choice in commands._choices_actions]
+    lines += ["", "| Option | What |", "| --- | --- |"]
+    lines += [f"| `{prog} {_argument(action)}` | {_plain(action.help)} |" for action in command_line._actions
+              if not isinstance(action, (argparse._HelpAction, argparse._SubParsersAction))]
     for name, command in commands.choices.items():
         lines += ["", f"## `{prog} {name}` {{#{name}}}", "", _plain(command.description), "",
                   "| Argument | What |", "| --- | --- |"]

@@ -697,8 +697,8 @@ class _Command:
             owned.remove()
         except Exception as error:
             with contextlib.suppress(Exception):
-                warnings.warn(f"supervisor control directory retained: {owned.root}; "
-                              f"ownership receipt: {owned.receipt}; "
+                warnings.warn(f"supervisor control directory retained: {owned.root}. "
+                              f"Ownership receipt: {owned.receipt}. "
                               f"{type(error).__name__}: {error}",
                               RuntimeWarning, stacklevel=3)
 

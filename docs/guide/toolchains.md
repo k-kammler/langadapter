@@ -3,7 +3,9 @@
 `langadapter toolchains` installs the tools a language's projects need on
 Ubuntu 24.04 on x86_64: on the computer itself, in WSL with Ubuntu 24.04 and
 in an Ubuntu 24.04 container. Each language's part ends with `langadapter check` on a small
-example, so the command shows that what it installed works.
+example: it runs the example's tests, measures their coverage and runs a mutation
+session on its source file, so the command shows that the tools it installed work
+together.
 
 ## Install with the recipe
 
@@ -76,7 +78,7 @@ Each part names its downloads by kind, and `--list` prints them:
 
 A part never calls sudo. Run as root, as in a container, it installs the
 system packages it needs with apt-get. Run as a user, it stops with the exact
-`sudo apt-get install` line when one is missing.
+`sudo apt-get update && sudo apt-get install` line when one is missing.
 
 ## In a container
 
@@ -141,7 +143,7 @@ mkdir -p "$HERE/example"
 if [ "$(id -u)" -eq 0 ]; then
     apt-get update && apt-get install -y --no-install-recommends lua5.4
 elif ! command -v lua5.4 >/dev/null; then
-    echo "sudo apt-get install lua5.4" >&2
+    echo "sudo apt-get update && sudo apt-get install lua5.4" >&2
     exit 1
 fi
 echo "export LUA=$(command -v lua5.4)" > "$DIR/lua.env"

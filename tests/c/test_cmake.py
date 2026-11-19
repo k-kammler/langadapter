@@ -175,7 +175,7 @@ def test_ctests_tests_run_as_ctest_runs_them(project, adapter):
         _ctest_suite(root), timeout_s=300, coverage_target="src/calc.c"))
     assert run.outcome is la.Outcome.COMPLETED, run.reason_text(None)
     verdicts = {t.test.qualname: t.outcome for t in run.tests}
-    # WILL_FAIL inverts a failing program; ENVIRONMENT reaches the test.
+    # WILL_FAIL inverts a failing program, and ENVIRONMENT reaches the test.
     assert verdicts == {"own_program": "passed", "low": "passed", "high": "passed",
                         "wrong_on_purpose": "passed", "from_environment": "passed",
                         "a_script": "skipped"}
@@ -193,7 +193,7 @@ def test_ctests_tests_are_timed_as_ctest_runs_them(project, adapter):
         _ctest_suite(root), runs=2, timeout_s=300))
     assert timed.outcome is la.Outcome.COMPLETED, timed.reason
     assert len(timed.times_ms) == 2 and "ctest" in timed.includes
-    # With a limit of 20, high (50, expecting 10) fails; wrong_on_purpose still passes.
+    # With a limit of 20, high (50, expecting 10) fails, and wrong_on_purpose still passes.
     failing = adapter(root, **CTEST, c_build="-DCALC_LIMIT=20").tests.benchmark(
         BenchmarkRequest(_ctest_suite(root), runs=2, timeout_s=300))
     assert failing.outcome is la.Outcome.TEST_FAILURES, failing.reason

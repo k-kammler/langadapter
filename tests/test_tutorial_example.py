@@ -152,7 +152,7 @@ def test_the_toy_mutants_carry_ids_changes_statuses_and_killers(project):
 @pytest.mark.parametrize("index", range(len(STEPS)), ids=lambda index: STEPS[index].stem)
 def test_from_step_3_each_test_reports_its_own_coverage(project, index):
     """Each test, run alone, covers its own function's line, and the suite
-    covers them all; before step 3 there is no per-test evidence."""
+    covers them all. Before step 3 there is no per-test evidence."""
     adapter = _step(STEPS[index])(lb.ProjectContext(str(project),
                                                     lb.Interpreter(path=sys.executable)))
     request = PerTestEvidenceRequest(lb.Suite(str(project), ("test_calc.toy",)), "calc.toy",

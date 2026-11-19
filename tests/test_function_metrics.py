@@ -191,7 +191,7 @@ class Data(Protocol):
 def test_the_file_complexity_is_lizard_s_own_sum_and_a_stub_has_none():
     """A stub, in which lizard counts no function, adds nothing to the
     file's complexity, which is lizard's own sum, and has no complexity of
-    its own; it still counts as a function."""
+    its own. It still counts as a function."""
     from lizard import analyze_file
 
     result = scoped(binding("python"), STUBS)

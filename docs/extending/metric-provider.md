@@ -130,4 +130,4 @@ python examples/metric_provider.py path/to/source.py
 ```
 
 The examples are where [Getting started](../getting-started.md#run-a-suite) says:
-[examples/metric_provider.py](https://github.com/k-kammler/langadapter/blob/v0.1.0/examples/metric_provider.py).
+[examples/metric_provider.py](https://github.com/k-kammler/langadapter/blob/v0.1.1/examples/metric_provider.py).
